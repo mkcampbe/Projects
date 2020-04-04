@@ -1,0 +1,769 @@
+Participant_ID	diet_status	meat_freq	red_meat_freq	study_week
+U001	Vegetarian	-	-	week1
+U002	Vegetarian	-	-	week1
+U003	Vegetarian	-	-	week1
+U004	Vegetarian	-	-	week1
+U005	Vegetarian	-	-	week1
+U006	Vegetarian	-	-	week1
+U007	Vegetarian	-	-	week1
+U008	Vegetarian	-	-	week1
+U009	Vegetarian	-	-	week1
+U010	Vegetarian	-	-	week1
+U011	Vegetarian	-	-	week1
+U013	Vegetarian	-	-	week1
+U014	Vegetarian	-	-	week1
+U015	Vegetarian	-	-	week1
+U016	Vegetarian	-	-	week1
+U017	Vegetarian	-	-	week1
+U018	Omnivorous	-	-	week1
+U019	Vegetarian	-	-	week1
+U020	Vegetarian	-	-	week1
+U021	Vegetarian	-	-	week1
+U023	Vegetarian	-	-	week1
+U024	Vegetarian	-	-	week1
+U025	Vegetarian	-	-	week1
+U026	Vegetarian	-	-	week1
+U027	Vegan	-	-	week1
+U028	Vegetarian	-	-	week1
+U029	Vegetarian	-	-	week1
+U030	Vegetarian	-	-	week1
+U031	Vegetarian	-	-	week1
+U032	Vegetarian	-	-	week1
+U033	Vegetarian	-	-	week1
+U034	Vegetarian	-	-	week1
+U035	Vegetarian	-	-	week1
+U036	Vegetarian	-	-	week1
+U037	Vegetarian	-	-	week1
+U041	Omnivorous	-	-	week1
+U042	Omnivorous	-	-	week1
+U042	Omnivorous	-	-	week1
+U043	Omnivorous	-	-	week1
+U044	Omnivorous	-	-	week1
+U045	Omnivorous	-	-	week1
+U046	Omnivorous	-	-	week1
+U047	Vegetarian	-	-	week1
+U048	Omnivorous	-	-	week1
+U049	Omnivorous	-	-	week1
+U050	Omnivorous	-	-	week1
+U051	Omnivorous	-	-	week1
+U052	Omnivorous	-	-	week1
+U053	Vegetarian	-	-	week1
+U054	Omnivorous	-	-	week1
+U055	Omnivorous	-	-	week1
+U056	Omnivorous	-	-	week1
+U057	Omnivorous	-	-	week1
+U058	Omnivorous	-	-	week1
+U059	Omnivorous	-	-	week1
+U060	Omnivorous	-	-	week1
+U061	Omnivorous	-	-	week1
+U063	Omnivorous	-	-	week1
+U064	Omnivorous	-	-	week1
+U066	Omnivorous	-	-	week1
+U067	Omnivorous	-	-	week1
+U068	Omnivorous	-	-	week1
+U069	Omnivorous	-	-	week1
+U070	Vegetarian	-	-	week1
+U072	Omnivorous	-	-	week1
+U073	Omnivorous	-	-	week1
+U074	Vegetarian	-	-	week1
+U075	Omnivorous	-	-	week1
+U076	Omnivorous	-	-	week1
+U077	Omnivorous	-	-	week1
+U078	Omnivorous	-	-	week1
+U080	Omnivorous	-	-	week1
+U081	Omnivorous	-	-	week1
+U082	Omnivorous	-	-	week1
+U083	Omnivorous	-	-	week1
+U084	Omnivorous	-	-	week1
+U085	Omnivorous	-	-	week1
+U086	Omnivorous	-	-	week1
+U087	Omnivorous	-	-	week1
+U088	Omnivorous	-	-	week1
+U089	Omnivorous	-	-	week1
+U090	Omnivorous	-	-	week1
+U091	Omnivorous	-	-	week1
+U092	Omnivorous	-	-	week1
+U093	Omnivorous	-	-	week1
+U094	Omnivorous	-	-	week1
+U096	Omnivorous	-	-	week1
+U097	Omnivorous	-	-	week1
+U098	Omnivorous	-	-	week1
+U099	Omnivorous	-	-	week1
+U100	Omnivorous	-	-	week1
+U101	Omnivorous	-	-	week1
+U102	Omnivorous	-	-	week1
+U104	Vegan	-	-	week1
+U105	Omnivorous	-	-	week1
+U106	Omnivorous	-	-	week1
+U107	Omnivorous	-	-	week1
+U109	Omnivorous	-	-	week1
+U110	Omnivorous	-	-	week1
+U111	Omnivorous	-	-	week1
+U112	Omnivorous	-	-	week1
+U113	Omnivorous	-	-	week1
+U114	Omnivorous	-	-	week1
+U115	Omnivorous	-	-	week1
+U116	Omnivorous	-	-	week1
+U117	Omnivorous	-	-	week1
+U118	Omnivorous	-	-	week1
+U119	Omnivorous	-	-	week1
+U120	Omnivorous	-	-	week1
+U121	Omnivorous	-	-	week1
+U122	Omnivorous	-	-	week1
+U124	Omnivorous	-	-	week1
+U125	Omnivorous	-	-	week1
+U126	Vegetarian	-	-	week1
+U127	Vegetarian	-	-	week1
+U128	Omnivorous	-	-	week1
+U129	Omnivorous	-	-	week1
+U131	Omnivorous	-	-	week1
+U132	Vegetarian	-	-	week1
+U133	Omnivorous	-	-	week1
+U134	Omnivorous	-	-	week1
+U135	Omnivorous	-	-	week1
+U137	Omnivorous	-	-	week1
+U139	Vegetarian	-	-	week1
+U140	Omnivorous	-	-	week1
+U141	Omnivorous	-	-	week1
+U142	Omnivorous	-	-	week1
+U143	Omnivorous	-	-	week1
+U145	Omnivorous	-	-	week1
+U146	Omnivorous	-	-	week1
+U147	Omnivorous	-	-	week1
+U148	Omnivorous	-	-	week1
+U149	Omnivorous	-	-	week1
+U150	Omnivorous	-	-	week1
+U151	Omnivorous	-	-	week1
+U152	Omnivorous	-	-	week1
+U154	Omnivorous	-	-	week1
+U155	Omnivorous	-	-	week1
+U156	Omnivorous	-	-	week1
+U157	Omnivorous	-	-	week1
+U158	Omnivorous	-	-	week1
+U159	Omnivorous	-	-	week1
+U160	Omnivorous	-	-	week1
+U161	Omnivorous	-	-	week1
+U163	Omnivorous	-	-	week1
+U164	Omnivorous	-	-	week1
+U165	Vegetarian	-	-	week1
+U166	Omnivorous	-	-	week1
+U167	Omnivorous	-	-	week1
+U168	Omnivorous	-	-	week1
+U169	Omnivorous	-	-	week1
+U171	Omnivorous	-	-	week1
+U172	Omnivorous	-	-	week1
+U174	Omnivorous	-	-	week1
+U175	Omnivorous	-	-	week1
+U176	Omnivorous	-	-	week1
+U177	Omnivorous	-	-	week1
+U178	Omnivorous	-	-	week1
+U179	Vegetarian	-	-	week1
+U180	Omnivorous	-	-	week1
+U181	Vegetarian	-	-	week1
+U182	Vegetarian	-	-	week1
+U183	Vegetarian	-	-	week1
+U184	Omnivorous	-	-	week1
+U185	Omnivorous	-	-	week1
+U186	Omnivorous	-	-	week1
+U187	Omnivorous	-	-	week1
+U188	Omnivorous	-	-	week1
+U190	Omnivorous	-	-	week1
+U193	Vegetarian	-	-	week1
+U194	Omnivorous	-	-	week1
+U195	Omnivorous	-	-	week1
+U196	Omnivorous	-	-	week1
+U198	Vegetarian	-	-	week1
+U199	Omnivorous	-	-	week1
+U200	Omnivorous	-	-	week1
+U201	Omnivorous	-	-	week1
+U202	Omnivorous	-	-	week1
+U203	Omnivorous	-	-	week1
+U210	Omnivorous	-	Once a month	week1
+U211	Omnivorous	-	Once a week	week1
+U212	Omnivorous	-	Never	week1
+U213	Pescetarian	-	Never	week1
+U214	Omnivorous	-	Once a month	week1
+U215	Omnivorous	-	Never	week1
+U216	Omnivorous	-	Once a week	week1
+U217	Vegetarian	-	Never	week1
+U218	Pescetarian	-	Once a month	week1
+U219	Omnivorous	-	More than once a week	week1
+U220	Omnivorous	-	More than once a week	week1
+U221	Omnivorous	-	More than once a week	week1
+U222	Omnivorous	-	More than once a week	week1
+U223	Omnivorous	-	More than once a week	week1
+U224	Omnivorous	-	Once a week	week1
+U225	Omnivorous	-	Once a month	week1
+U226	Pescetarian	-	Never	week1
+U227	Omnivorous	-	Once a month	week1
+U228	Omnivorous	-	Once a week	week1
+U229	Omnivorous	-	Once a week	week1
+U230	Omnivorous	-	Once a month	week1
+U232	Vegetarian	-	Never	week1
+U233	Omnivorous	-	Once a week	week1
+U234	Omnivorous	-	More than once a week	week1
+U235	Omnivorous	-	Once a month	week1
+U237	Omnivorous	-	More than once a week	week1
+U238	Omnivorous	-	Once a week	week1
+U241	Omnivorous	-	Once a week	week1
+U242	Omnivorous	-	Once a week	week1
+U243	Omnivorous	-	Once a week	week1
+U246	Omnivorous	-	Once a month	week1
+U247	Omnivorous	-	More than once a week	week1
+U248	Omnivorous	-	Once a week	week1
+U249	Omnivorous	-	Once a month	week1
+U250	Omnivorous	-	Never	week1
+U252	Omnivorous	-	Never	week1
+U253	Omnivorous	-	More than once a week	week1
+U254	Omnivorous	-	Never	week1
+U255	Omnivorous	-	Once a week	week1
+U256	Omnivorous	-	More than once a week	week1
+U257	Vegetarian	-	Never	week1
+U258	Omnivorous	-	More than once a week	week1
+U259	Omnivorous	-	Once a month	week1
+U260	Omnivorous	-	More than once a week	week1
+U261	Omnivorous	-	Once a month	week1
+U262	Omnivorous	-	Once a week	week1
+U263	Omnivorous	-	Once a week	week1
+U264	Omnivorous	-	More than once a week	week1
+U265	Omnivorous	-	Once a month	week1
+U266	Omnivorous	-	More than once a week	week1
+U267	Omnivorous	-	Once a week	week1
+U268	Omnivorous	-	Once a month	week1
+U269	Omnivorous	-	Once a week	week1
+U270	Omnivorous	-	Once a month	week1
+U271	Omnivorous	-	More than once a week	week1
+U272	Omnivorous	-	Once a month	week1
+U273	Omnivorous	-	More than once a week	week1
+U274	Omnivorous	-	Once a week	week1
+U275	Omnivorous	-	More than once a week	week1
+U276	Omnivorous	-	Once a week	week1
+U277	Omnivorous	-	Once a month	week1
+U279	Omnivorous	-	More than once a week	week1
+U280	Omnivorous	-	Once a week	week1
+U282	Omnivorous	-	More than once a week	week1
+U283	Omnivorous	-	More than once a week	week1
+U284	Omnivorous	-	Never	week1
+U285	Omnivorous	-	Once a week	week1
+U286	Omnivorous	-	Once a week	week1
+U288	Omnivorous	-	More than once a week	week1
+U290	Omnivorous	-	Once a month	week1
+U291	Omnivorous	-	More than once a week	week1
+U292	Omnivorous	-	More than once a week	week1
+U294	Omnivorous	-	Once a week	week1
+U296	Omnivorous	-	More than once a week	week1
+U297	Vegetarian	-	Never	week1
+U299	Omnivorous	-	Once a month	week1
+U300	Omnivorous	-	Once a week	week1
+U301	Omnivorous	-	Once a month	week1
+U302	Omnivorous	-	Once a month	week1
+U310	Omnivorous	7	-	week1
+U311	Omnivorous	5-6 times	-	week1
+U312	Omnivorous	7	-	week1
+U314	Omnivorous	5-6 times	-	week1
+U315	Omnivorous	5-6 times	-	week1
+U316	Omnivorous	3-4 times	-	week1
+U317	Omnivorous	7	-	week1
+U318	Omnivorous	1-2 times	-	week1
+U319	Omnivorous	5-6 times	-	week1
+U320	Omnivorous	5-6 times	-	week1
+U321	Omnivorous	5-6 times	-	week1
+U322	Omnivorous	7	-	week1
+U323	Omnivorous	3-4 times	-	week1
+U325	Vegetarian	0	-	week1
+U326	Omnivorous	7	-	week1
+U327	Omnivorous	1-2 times	-	week1
+U328	Omnivorous	5-6 times	-	week1
+U329	Omnivorous	1-2 times	-	week1
+U330	Omnivorous	7	-	week1
+U332	Omnivorous	7	-	week1
+U333	Omnivorous	3-4 times	-	week1
+U334	Omnivorous	7	-	week1
+U335	Omnivorous	1-2 times	-	week1
+U336	Omnivorous	5-6 times	-	week1
+U337	Omnivorous	3-4 times	-	week1
+U338	Omnivorous	7	-	week1
+U339	Omnivorous	3-4 times	-	week1
+U340	Omnivorous	1-2 times	-	week1
+U341	Omnivorous	7	-	week1
+U343	Omnivorous	5-6 times	-	week1
+U344	Omnivorous	3-4 times	-	week1
+U345	Omnivorous	7	-	week1
+U346	Omnivorous	7	-	week1
+U347	Omnivorous	1-2 times	-	week1
+U348	Omnivorous	7	-	week1
+U349	Omnivorous	1-2 times	-	week1
+U350	Omnivorous	7	-	week1
+U351	Omnivorous	7	-	week1
+U352	Omnivorous	7	-	week1
+U353	Omnivorous	7	-	week1
+U354	Vegetarian	0	-	week1
+U355	Omnivorous	1-2 times	-	week1
+U356	Omnivorous	5-6 times	-	week1
+U357	Omnivorous	1-2 times	-	week1
+U358	Omnivorous	7	-	week1
+U360	Omnivorous	5-6 times	-	week1
+U363	Omnivorous	3-4 times	-	week1
+U364	Vegetarian	0	-	week1
+U365	Omnivorous	7	-	week1
+U366	Omnivorous	7	-	week1
+U367	Omnivorous	1-2 times	-	week1
+U368	Vegetarian	0	-	week1
+U369	Omnivorous	7	-	week1
+U370	Omnivorous	7	-	week1
+U371	Omnivorous	3-4 times	-	week1
+U372	Omnivorous	3-4 times	-	week1
+U373	Omnivorous	7	-	week1
+U375	Omnivorous	1-2 times	-	week1
+U376	Omnivorous	5-6 times	-	week1
+U377	Omnivorous	5-6 times	-	week1
+U378	Omnivorous	7	-	week1
+U379	Omnivorous	7	-	week1
+U380	Omnivorous	5-6 times	-	week1
+U381	Omnivorous	7	-	week1
+U382	Omnivorous	5-6 times	-	week1
+U383	Omnivorous	7	-	week1
+U384	Omnivorous	1-2 times	-	week1
+U385	Omnivorous	5-6 times	-	week1
+U386	Omnivorous	3-4 times	-	week1
+U387	Vegetarian	0	-	week1
+U387	Vegetarian	0	-	week1
+U388	Omnivorous	5-6 times	-	week1
+U389	Omnivorous	7	-	week1
+U390	Omnivorous	7	-	week1
+U392	Omnivorous	7	-	week1
+U393	Omnivorous	7	-	week1
+U394	Omnivorous	7	-	week1
+U395	Omnivorous	5-6 times	-	week1
+U396	Omnivorous	1-2 times	-	week1
+U397	Omnivorous	3-4 times	-	week1
+U398	Vegetarian	0	-	week1
+U399	Omnivorous	7	-	week1
+U400	Omnivorous	-	About once per week	week1
+U401	Omnivorous	-	Daily	week1
+U402	Vegetarion	-	Never	week1
+U404	Omnivorous	-	About once per week	week1
+U405	Vegetarion	-	Never	week1
+U406	Omnivorous	-	2-4 times per week	week1
+U407	Omnivorous	-	About once per week	week1
+U408	Omnivorous	-	2-4 times per week	week1
+U410	Omnivorous	-	Never	week1
+U411	Omnivorous	-	NA	week1
+U412	Omnivorous	-	1-3 times per month	week1
+U413	Omnivorous	-	1-3 times per month	week1
+U414	Omnivorous	-	About once per week	week1
+U415	Omnivorous	-	About once per week	week1
+U416	Pollo-pescatarian (only poultry and fish)	-	1-3 times per month	week1
+U417	Vegetarion	-	Never	week1
+U418	Omnivorous	-	About once per week	week1
+U419	Omnivorous	-	2-4 times per week	week1
+U420	Omnivorous	-	2-4 times per week	week1
+U421	Omnivorous	-	2-4 times per week	week1
+U422	Omnivorous	-	1-3 times per month	week1
+U423	Omnivorous	-	1-3 times per month	week1
+U424	Omnivorous	-	About once per week	week1
+U425	Omnivorous	-	1-3 times per month	week1
+U426	Omnivorous	-	About once per week	week1
+U427	Omnivorous	-	About once per week	week1
+U428	Pollo-pescatarian (only poultry and fish)	-	Never	week1
+U429	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	Never	week1
+U430	Vegetarion	-	Never	week1
+U431	Omnivorous	-	1-3 times per month	week1
+U432	Omnivorous	-	Daily	week1
+U433	Omnivorous	-	2-4 times per week	week1
+U434	Omnivorous	-	Daily	week1
+U436	Omnivorous	-	1-3 times per month	week1
+U437	Omnivorous	-	2-4 times per week	week1
+U438	Omnivorous	-	2-4 times per week	week1
+U439	Omnivorous	-	About once per week	week1
+U441	Omnivorous	-	2-4 times per week	week1
+U442	Omnivorous	-	2-4 times per week	week1
+U443	Omnivorous	-	About once per week	week1
+U444	Omnivorous	-	1-3 times per month	week1
+U445	Omnivorous	-	Daily	week1
+U446	Vegetarion	-	Never	week1
+U447	Omnivorous	-	About once per week	week1
+U448	Omnivorous	-	Daily	week1
+U449	Omnivorous	-	2-4 times per week	week1
+U450	Omnivorous	-	About once per week	week1
+U452	Omnivorous	-	Daily	week1
+U453	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	Never	week1
+U454	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	1-3 times per month	week1
+U455	Vegan	-	Never	week1
+U456	Omnivorous	-	About once per week	week1
+U457	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	1-3 times per month	week1
+U458	Omnivorous	-	Daily	week1
+U459	Omnivorous	-	2-4 times per week	week1
+U460	Omnivorous	-	About once per week	week1
+U461	Omnivorous	-	About once per week	week1
+U462	Omnivorous	-	2-4 times per week	week1
+U463	Pollo-pescatarian (only poultry and fish)	-	Never	week1
+U464	Omnivorous	-	2-4 times per week	week1
+U465	Omnivorous	-	1-3 times per month	week1
+U466	Pescetarian	-	Never	week1
+U467	Omnivorous	-	1-3 times per month	week1
+U468	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	1-3 times per month	week1
+U469	Omnivorous	-	About once per week	week1
+U470	Omnivorous	-	2-4 times per week	week1
+U471	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	Never	week1
+U472	Omnivorous	-	2-4 times per week	week1
+U473	Omnivorous	-	2-4 times per week	week1
+U474	Omnivorous	-	1-3 times per month	week1
+U475	Omnivorous	-	2-4 times per week	week1
+U476	Omnivorous	-	About once per week	week1
+U477	Omnivorous	-	1-3 times per month	week1
+U478	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	1-3 times per month	week1
+U479	Omnivorous	-	1-3 times per month	week1
+U480	Omnivorous	-	Daily	week1
+U481	Omnivorous	-	About once per week	week1
+U482	Omnivorous	-	2-4 times per week	week1
+U483	"Flexitarian (primarily vegetarian, but occasionally eat meat)"	-	1-3 times per month	week1
+U484	Omnivorous	-	2-4 times per week	week1
+U485	Omnivorous	-	Never	week1
+U486	Omnivorous	-	Daily	week1
+U487	Omnivorous	-	1-3 times per month	week1
+U488	Vegetarion	-	Never	week1
+U489	Omnivorous	-	1-3 times per month	week1
+U500	Vegetarian	0	-	week1
+U501	Omnivorous	1	"poultry, red meat, fish"	week1
+U502	Omnivorous	3	"red meat, poultry, fish"	week1
+U503	Omnivorous	1	"poultry, red meat, fish"	week1
+U504	Omnivorous	1	"red meat, poultry, fish"	week1
+U506	Omnivorous	2	"poultry, red meat, fish"	week1
+U507	Omnivorous	1	"poultry, red meat, fish"	week1
+U508	Omnivorous	2	"red meat, poultry, fish"	week1
+U509	Omnivorous	2	poultry	week1
+U510	Omnivorous	3	"poultry, red meat, fish"	week1
+U511	Omnivorous	2	"poultry, fish, red meat"	week1
+U512	Omnivorous	2	"poultry, fish, red meat"	week1
+U513	Omnivorous	2	"poultry, fish, red meat"	week1
+U514	Omnivorous	2	"red meat, poultry, fish"	week1
+U516	Omnivorous	3	"red meat, poultry, fish"	week1
+U517	Omnivorous	1	"poultry, red meat, fish"	week1
+U518	Omnivorous	1	"poultry, fish, red meat"	week1
+U519	Vegetarian	0	-	week1
+U520	Omnivorous	2	"poultry, red meat"	week1
+U521	Omnivorous	2	"red meat, poultry, fish"	week1
+U522	Omnivorous	3	"poultry, red meat, fish"	week1
+U523	Omnivorous	5	red meat	week1
+U524	Omnivorous	2	"red meat, poultry, fish"	week1
+U525	Omnivorous	1	"poultry, fish, red meat"	week1
+U526	Omnivorous	3	"red meat, poultry, fish"	week1
+U527	Omnivorous	2	"red meat, poultry, fish"	week1
+U528	Omnivorous	1	"poultry, red meat"	week1
+U529	Omnivorous	1	"poultry, red meat, fish"	week1
+U530	Omnivorous	1	red meat	week1
+U531	Omnivorous	3	"poultry, red meat, fish"	week1
+U532	Omnivorous	3	"poultry, red meat"	week1
+U533	Omnivorous	2	"red meat, poultry, fish"	week1
+U534	Omnivorous	4	"poultry, fish, red meat"	week1
+U535	Omnivorous	2	"poultry, red meat, fish"	week1
+U536	Omnivorous	2	"red meat, fish, poultry"	week1
+U540	Omnivorous	2	"poultry, red meat, fish"	week1
+U541	Omnivorous	5	"poultry, fish, red meat"	week1
+U542	Pescatarian	0	0	week1
+U543	Omnivorous	1	"poultry, red meat, fish"	week1
+U544	Omnivorous	2	"red meat, fish, poultry"	week1
+U545	Omnivorous	2	"poultry, red meat, fish"	week1
+U546	Omnivorous	2	"poultry, red meat, fish"	week1
+U547	Omnivorous	1	"fish, poultry, red meat"	week1
+U548	Omnivorous	1	"poultry, fish, red meat"	week1
+U549	Omnivorous	1	"poultry, red meat, fish"	week1
+U550	Vegan	0	-	week1
+U551	Omnivorous	2	"poultry, red mat"	week1
+U552	Omnivorous	4	"poultry, red meat, fish"	week1
+U553	Pescatarian	1	"fish, poultry, red meat"	week1
+U554	Omnivorous	2	"poultry, red meat, fish"	week1
+U555	Omnivorous	1	"poultry, red meat, fish"	week1
+U556	Omnivorous	2	"poultry, red meat, fish"	week1
+U557	Omnivorous	1	"poultry, fish, red meat"	week1
+U558	Omnivorous	2	"red meat, poultry, fish"	week1
+U559	Omnivorous	1	"poultry, fish, red meat"	week1
+U561	Omnivorous	2	"poultry, red meat"	week1
+U562	Omnivorous	1	"poultry, red meat"	week1
+U563	Omnivorous	1	"fish, red meat, poultry"	week1
+U564	Omnivorous	2	"poultry, red meat, fish"	week1
+U565	Omnivorous	1	"poultry, red meat"	week1
+U566	Omnivorous	3	"poultry, red meat, fish"	week1
+U567	Omnivorous	1	"red meat, poultry, fish"	week1
+U568	Omnivorous	2	"poultry, red meat, fish"	week1
+U569	Omnivorous	2	"poultry, fish, red meat"	week1
+U570	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U571	Vegetarian	0	-	week1
+U572	Omnivorous	2	"red meat, fish"	week1
+U573	Omnivorous	1	"poultry, red meat, fish"	week1
+U574	Vegetarian	0	-	week1
+U575	Omnivorous	2	"red meat, poultry, fish"	week1
+U576	Omnivorous	5	"red meat, poultry, fish"	week1
+U577	Omnivorous	1	"poultry, fish, red meat"	week1
+U578	Omnivorous	3	"red meat, poultry, fish"	week1
+U579	Omnivorous	2	"poultry, red meat"	week1
+U580	Omnivorous	3	"red meat, poultry, fish"	week1
+U581	Vegetarian	0	-	week1
+U582	Omnivorous	1	"red meat, poultry, fish"	week1
+U583	Omnivorous	2	"poultry, red meat, fish"	week1
+U584	Omnivorous	3	"poultry, red meat, fish"	week1
+U585	Omnivorous	3	"red meat, poultry, fish"	week1
+U586	Omnivorous	2	"poultry, fish, red meat"	week1
+U587	Omnivorous	3	"red meat, poultry"	week1
+U588	Omnivorous	2	"poultry, red meat, fish"	week1
+U589	Pescatarian	0	0	week1
+U600	Omnivorous	5	1	week1
+U602	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U603	Omnivorous	12	4	week1
+U605	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U606	Omnivorous	6	3	week1
+U607	Omnivorous	14	3	week1
+U608	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U610	Omnivorous	3	0	week1
+U611	Pescatarian	7	1	week1
+U612	Omnivorous	10	6	week1
+U613	Omnivorous	14	5	week1
+U615	Omnivorous	14	6	week1
+U616	Omnivorous	4	1	week1
+U617	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U618	Omnivorous	10	5	week1
+U619	Omnivorous	6	5	week1
+U620	Omnivorous	14	3	week1
+U621	Omnivorous	7	3	week1
+U622	Omnivorous	10	1	week1
+U623	Omnivorous	7	3	week1
+U624	Omnivorous	3	0	week1
+U625	Omnivorous	4	2	week1
+U626	Omnivorous	14	3	week1
+U627	Pescatarian	1	0	week1
+U628	Omnivorous	12	7	week1
+U629	Omnivorous	5	0	week1
+U630	Omnivorous	5	0	week1
+U631	Omnivorous	9	3	week1
+U633	Omnivorous	10	7	week1
+U634	Omnivorous	12	4	week1
+U635	Omnivorous	2	1	week1
+U636	Omnivorous	12	2	week1
+U637	Omnivorous	18	3	week1
+U638	Omnivorous	7	2	week1
+U639	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U640	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U642	Pollo-pescatarian (only poultry and fish)	21	5	week1
+U643	Omnivorous	6	1	week1
+U644	Omnivorous	18	7	week1
+U645	Omnivorous	12	3	week1
+U646	Omnivorous	7	6	week1
+U648	Pollo-pescatarian (only poultry and fish)	5	1	week1
+U649	Omnivorous	10	10	week1
+U650	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U651	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U652	Omnivorous	10	2	week1
+U653	Omnivorous	14	4	week1
+U654	Omnivorous	14	0.4	week1
+U655	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U656	Omnivorous	10	2	week1
+U658	Pollo-pescatarian (only poultry and fish)	20	6	week1
+U660	Omnivorous	14	0	week1
+U661	Omnivorous	7	6	week1
+U662	Omnivorous	9	5	week1
+U663	Omnivorous	4	1	week1
+U664	Omnivorous	4	2	week1
+U665	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U666	Omnivorous	24	3	week1
+U667	Omnivorous	3	3	week1
+U668	Pescatarian	2	0	week1
+U669	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U670	Omnivorous	21	2	week1
+U671	Omnivorous	14	5	week1
+U672	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U673	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U674	Omnivorous	8	6	week1
+U676	Pescatarian	1	0	week1
+U677	Omnivorous	12	3	week1
+U678	Omnivorous	19	15	week1
+U679	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U680	Omnivorous	7	3	week1
+U681	Pollo-pescatarian (only poultry and fish)	5	1	week1
+U682	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U683	Vegan	0	0	week1
+U685	Omnivorous	5	4	week1
+U686	Pollo-pescatarian (only poultry and fish)	7	1	week1
+U687	Omnivorous	6	1-2 times	week1
+U688	Omnivorous	5	0	week1
+U689	Pollo-pescatarian (only poultry and fish)	14	4	week1
+U700	Omnivorous	2	7.00E-02	week1
+U701	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	2	0	week1
+U702	Omnivorous	2	7.00E-02	week1
+U703	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U704	Omnivorous	3	0.05	week1
+U705	Omnivorous	1	0	week1
+U706	Pollo-pescatarian (only poultry and fish)	2	< 50%	week1
+U707	Omnivorous	1	Nearly all meals	week1
+U708	Omnivorous	2	Nearly all meals	week1
+U709	Omnivorous	3	0.05	week1
+U710	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U711	Omnivorous	1	0.14	week1
+U712	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U713	Omnivorous	1	0.25	week1
+U714	Pescatarian	2	0	week1
+U715	Omnivorous	3	0.6	week1
+U716	Omnivorous	2	7.00E-02	week1
+U717	Omnivorous	2	7.00E-02	week1
+U719	Omnivorous	3	0.05	week1
+U720	Omnivorous	2	0.5	week1
+U721	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U722	Omnivorous	1	0	week1
+U723	Pollo-pescatarian (only poultry and fish)	2	Not often	week1
+U724	Omnivorous	2	30-50%	week1
+U725	Omnivorous	2	7.00E-02	week1
+U726	Omnivorous	2	0.5	week1
+U727	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U728	Omnivorous	1	Not often	week1
+U729	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U730	Omnivorous	0	0	week1
+U731	Omnivorous	2	7.00E-02	week1
+U732	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U733	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0.2	0.5	week1
+U734	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U735	Pollo-pescatarian (only poultry and fish)	3	0.05	week1
+U736	Omnivorous	NA	NA	week1
+U738	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U739	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U740	Omnivorous	2	25-30%	week1
+U741	Omnivorous	3	0.05	week1
+U743	Omnivorous	1	0.15	week1
+U744	Omnivorous	2	0	week1
+U745	Omnivorous	1	0.5	week1
+U746	Omnivorous	3	Not often	week1
+U747	Omnivorous	2	0.5	week1
+U749	Omnivorous	2	NA	week1
+U750	Omnivorous	1	Nearly all meals	week1
+U751	Pescatarian	0	0	week1
+U752	Omnivorous	1	14-30%	week1
+U753	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U754	Omnivorous	1	Rarely	week1
+U755	Pescatarian	1	0	week1
+U756	Omnivorous	1	Nearly all meals	week1
+U757	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	1	14-30%	week1
+U758	Omnivorous	3	0.05	week1
+U759	Omnivorous	1	0.29	week1
+U760	Omnivorous	1	0	week1
+U761	Omnivorous	2	0.5	week1
+U762	Omnivorous	2	NA	week1
+U763	Omnivorous	2.5	0.5	week1
+U764	Omnivorous	2	0.5	week1
+U766	Omnivorous	2	7.00E-02	week1
+U767	Omnivorous	2	0.5	week1
+U769	Omnivorous	1	0	week1
+U770	Omnivorous	2	0.5	week1
+U771	Pollo-pescatarian (only poultry and fish)	2	Not often	week1
+U772	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	3	0	week1
+U773	Omnivorous	1	0.5	week1
+U774	Omnivorous	4	Nearly all meals	week1
+U775	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	4	0	week1
+U776	Omnivorous	3	Not often	week1
+U777	Pescatarian	0	0	week1
+U778	Omnivorous	1	NA	week1
+U779	Omnivorous	2	7.00E-02	week1
+U780	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U781	Vegan	0	0	week1
+U783	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U784	Omnivorous	3	0.05	week1
+U785	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U786	Omnivorous	1	0.5	week1
+U787	Omnivorous	2	0	week1
+U788	Pollo-pescatarian (only poultry and fish)	3	0	week1
+U789	Omnivorous	1	Nearly all meals	week1
+U790	Vegan	0	0	week1
+U791	Pescatarian	2	0	week1
+U792	Pollo-pescatarian (only poultry and fish)	2	7.00E-02	week1
+U793	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U794	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U796	Omnivorous	1	0	week1
+U797	Omnivorous	1	0.14	week1
+U798	Omnivorous	2	0	week1
+U799	Omnivorous	3	0.05	week1
+U801	Omnivorous	2	1	week1
+U802	Omnivorous	2	At least once per day	week1
+U804	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U805	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U806	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U807	Omnivorous	1	0	week1
+U808	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U809	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U810	Omnivorous	1	not very often	week1
+U811	Pollo-pescatarian (only poultry and fish)	2	Rarely	week1
+U812	Omnivorous	3	2	week1
+U813	Omnivorous	2	1	week1
+U814	Pollo-pescatarian (only poultry and fish)	3	3-Jan	week1
+U815	Omnivorous	1	0	week1
+U816	Omnivorous	1	Rarely	week1
+U817	Omnivorous	1	not often	week1
+U818	Omnivorous	2	1	week1
+U819	Omnivorous	3	1	week1
+U820	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U821	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U822	Omnivorous	2	not often. always well done	week1
+U823	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U824	Pollo-pescatarian (only poultry and fish)	2	sometimes	week1
+U825	Omnivorous	2	1	week1
+U826	Omnivorous	2	1	week1
+U827	Omnivorous	2	1	week1
+U828	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	1	0	week1
+U829	Pollo-pescatarian (only poultry and fish)	2	0	week1
+U830	Omnivorous	1	1-2 times	week1
+U831	Vegan	0	0	week1
+U832	Omnivorous	2	0	week1
+U833	Omnivorous	2	often	week1
+U835	Omnivorous	2	1	week1
+U835	Omnivorous	2	1	week1
+U836	Omnivorous	1	"Pretty often, every other meal"	week1
+U837	Omnivorous	3	Rarely	week1
+U838	Pollo-pescatarian (only poultry and fish)	3	majority	week1
+U838	Pollo-pescatarian (only poultry and fish)	3	majority	week1
+U839	Omnivorous	3	0.5	week1
+U840	Omnivorous	3	1	week1
+U841	Omnivorous	3	Twice	week1
+U842	Pescatarian	0	0	week1
+U845	Pollo-pescatarian (only poultry and fish)	1	0	week1
+U846	Pescatarian	1	0	week1
+U847	Pollo-pescatarian (only poultry and fish)	1	About 2 meals that week	week1
+U849	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U850	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	1	beef	week1
+U851	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	0	0	week1
+U852	Omnivorous	3	0.33	week1
+U854	Omnivorous	1	0	week1
+U855	Omnivorous	1	lamb	week1
+U858	Pollo-pescatarian (only poultry and fish)	2	Once a week	week1
+U859	Omnivorous	3	0.5	week1
+U861	Omnivorous	3	2	week1
+U862	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	1	0	week1
+U863	Omnivorous	2	1	week1
+U864	Omnivorous	2	90% of the meals	week1
+U866	Omnivorous	1	0	week1
+U867	Omnivorous	1	0	week1
+U868	Vegan	0	0	week1
+U869	Pescatarian	3	0	week1
+U870	Omnivorous	2	I have sliced ham everyday at least once a day	week1
+U871	Omnivorous	2	0	week1
+U872	Omnivorous	2	about half	week1
+U873	Vegan	0	0	week1
+U876	Omnivorous	2	1	week1
+U877	Omnivorous	3	1	week1
+U879	Omnivorous	2	1	week1
+U880	Pescatarian	1	0	week1
+U881	Omnivorous	2	1	week1
+U882	Omnivorous	1	0	week1
+U883	Omnivorous	2	"Most of the time was red meat, occasionally had chicken"	week1
+U884	Pollo-pescatarian (only poultry and fish)	2	3	week1
+U885	Omnivorous	2	2	week1
+U886	Omnivorous	1	2 times a week	week1
+U887	Omnivorous	2	1	week1
+U888	Omnivorous	3	1	week1
+U889	Omnivorous	3	2	week1
+U890	Omnivorous	2	1-2 times	week1
+U891	Omnivorous	3	0	week1
+U892	"Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)"	3	0	week1
+U893	Pescatarian	1	0	week1
+U894	Omnivorous	2	1	week1
+U895	Omnivorous	3	"Not too often, I mostly would just stick to either beef or chicken. I also try to stay away from pork as much as I can."	week1
+U896	Omnivorous	2	0	week1
+U897	Omnivorous	1	0	week1
+U898	Omnivorous	2	2	week1
+U899	Omnivorous	2	Infrequently; usually chicken	week1

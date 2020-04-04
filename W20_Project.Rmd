@@ -1,0 +1,476 @@
+---
+title: "W20 Bio201 Project"
+author: "Mary Kate Campbell"
+date: "3/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/Documents/UMBio201/Project/")
+```
+# Load Packages
+```{r include=FALSE}
+library(vegan)
+library(tidyverse)
+library(readxl)
+library(broom)
+library(cowplot)
+library(phyloseq)
+set.seed(7)
+source("miseqR copy.R")
+```
+
+# Introduction 
+write a schpeel about my project and what i will be testing and analyzing 
+
+# Load Data
+Import the sample measurements and data. Based on the number of samples per participant, are the data in this file from individual samples or weekly averages?  Based on the number of samples per participants, the data in this file is of weekly averages 
+
+### Import data frames 
+```{r}
+sample_wkly_df <- read_delim("raw_data/sample_measurements_wkly.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE,
+                            col_types = cols(Participant_ID = col_character(),
+                                             Study_week = col_character(),
+                                             Semester = col_character(),
+                                             Supplement_consumed = col_character(),
+                                             Quantity_compliant = col_character(),
+                                             Frequency = col_character(),
+                                             pH_median = col_double(),
+                                             pH_mean = col_double(),
+                                             Bristol_median = col_logical(),
+                                             Bristol_mean = col_logical(),
+                                             Blood_glucose_median = col_double(),
+                                             Blood_glucose_mean = col_double(),
+                                             Acetate_median = col_double(),
+                                             Acetate_mean = col_double(),
+                                             Butyrate_median = col_double(),
+                                             Butyrate_mean = col_double(),
+                                             Propionate_median = col_double(),
+                                             Propionate_mean = col_double()
+                                             ))
+sample_individ_df <- read_delim("raw_data/sample_measurments_indv.txt",
+                                delim = "\t", escape_double = FALSE,
+                                col_types = cols(.default = col_character(),
+                                                 Sample_number = col_double(),
+                                                 Final_weight = col_double(),
+                                                 Acetate_mM = col_double(),
+                                                 Acetate_mmol_kg = col_double(),
+                                                 Butyrate_mM = col_double(),
+                                                 Butyrate_mmol_kg = col_double(),
+                                                 Propionate_mM = col_double(),
+                                                 Propionate_mmol_kg = col_double(),
+                                                 pH = col_logical(),
+                                                 Status = col_logical(),
+                                                 Bristol_score = col_logical(),
+                                                 Bristol_numeric = col_logical()))
+
+fibdiet_df <- read_delim("raw_data/Fiber_diet_data.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE,
+                            col_types = cols( Participant_ID = col_character(),
+                                              Semester = col_character(),
+                                              Study_week = col_character(),
+                                              Tracker = col_character(),
+                                              Fiber_g = col_double()) )
+
+diet_stat_df <- read_delim("raw_data/veg_meat_data_edited2.txt",
+                           delim = "\t", escape_double = FALSE, 
+                           trim_ws = TRUE,
+                           col_types = cols(Participant_ID = col_character(),
+                                            diet_status = col_character(),
+                                            meat_freq = col_character(),
+                                            red_meat_freq = col_character()))
+```
+### Import the weekly shared table.
+```{r}
+shared_tablewkly_project <- read_delim("raw_data/shared_table_wkly.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE, na=c("NA"),
+                            col_types = list()) %>% 
+  select(ID, starts_with("Otu")) %>% 
+  column_to_rownames(var = "ID") %>% 
+  # convert data frame to matrix object
+  as.matrix() %>% 
+  # convert to phyloseq object 
+  otu_table(., taxa_are_rows = FALSE)  
+```
+### Import the taxonomy table.
+```{r}
+taxa_project <- read_delim("raw_data/taxonomy_table.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE, na=c("NA")) %>%
+  # sequence variants (OTUs) need to be made into row names 
+  column_to_rownames(var = "OTUs") %>% 
+  as.matrix() %>%
+  # convert to phyloseq object 
+  tax_table()  
+```
+### Create phyloseq object
+```{r}
+diets_df2 <- diet_stat_df %>%  
+  select(Participant_ID,diet_status,study_week) %>% 
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+
+samples_df2 <- sample_wkly_df %>%  
+  # make all column names lower case
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+
+samples2_df <- full_join(samples_df2,diets_df2) 
+  
+fibdiet2_df <- fibdiet_df %>% 
+  select(Participant_ID,Semester,Study_week,Fiber_g) %>% 
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+  
+samples4_df <- full_join(samples2_df,fibdiet2_df)
+
+samples5_df <- samples4_df %>% 
+  filter(frequency =="2xdaily",
+         quantity_compliant == "yes",
+         study_week == "week1" | study_week == "week3",
+         supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  mutate(diet_status = recode(diet_status, "Vegetarion" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescetarian" = "Pescatarian"))
+
+  write_delim(samples5_df, path = "curated_data/combined_sample_msmts.txt",
+            delim = "\t", col_names = TRUE, quote = FALSE)
+  
+samples6_df <- read_delim("curated_data/combined_sample_msmts2.txt",
+                           delim = "\t", escape_double = FALSE, 
+                           trim_ws = TRUE,
+                           col_types = cols())
+  
+diets_project <- samples6_df %>% 
+    # sample IDs need to be made into row names
+  column_to_rownames(var = "sample_id") %>% 
+  # specify type of phyloseq object
+  sample_data()
+
+physq_proj1 <- phyloseq(shared_tablewkly_project, taxa_project, diets_project)
+```
+# Diet 
+We are going to look at what types of people have different diets. We then are going to look at their gut microbiome compostion based off 
+
+### Determining Diet 
+```{r}
+#data formatting 
+dietinfo_df <- samples5_df %>%  
+  select(-starts_with("but"), -starts_with("pro"), 
+         -starts_with("ph"), -starts_with("bristol"),
+         -starts_with("blood"),-starts_with("acet"),
+         -starts_with("fiber")) %>% 
+  filter(study_week == "week1") %>% 
+  drop_na()
+
+
+diets_df3 <- dietinfo_df %>% 
+group_by(diet_status, supplement_consumed) %>%  
+summarise(Counts = n())
+
+diets_df3
+diet_tab <- with(dietinfo_df, table(diet_status, supplement_consumed))
+diet_tab 
+```
+| | BRMPS | LOODAT |
+|:-----:|:-----:|:-----:|:-----:|
+| Flexitarian (primarily vegetarian, but occasionally eat meat)  | 4 | 0 |
+| Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs) | 0 | 2 |
+| Omnivorous | 80  | 17 |
+| Pescatarian | 1  | 1 |
+| Pollo-pescatarian (only poultry and fish) | 0 | 7 |
+| Vegan | 1  | 1 |
+| Vegetarian | 28 | 0 |
+
+### Omnivorous 
+```{r}
+omnivwk1_obj <- physq_proj1 %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., diet_status == "Omnivorous") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+omnivwk1_plot <- omnivwk1_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Omnivorous Participants Community Composition Week 1")
+
+omnivwk1_plot
+```
+### Vegetarian
+```{r}
+veget_obj <- physq_proj1 %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., diet_status == "Vegetarian") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+vegetwk1_plot <- veget_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Vegetarian Participants Community Composition Week 1")
+
+vegetwk1_plot
+```
+### Flexitarian 
+```{r}
+flex_obj <- physq_proj1 %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>%
+  subset_samples(., diet_status == "Flexitarian (primarily vegetarian, but occasionally eat meat)") %>% 
+  subset_samples(., study_week == "week1") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+flexwk1_plot <- flex_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Flexitarian Participants Community Composition Week 1")
+
+flexwk1_plot
+```
+### Lacto-ovo-vegetarian
+```{r}
+lacto_obj <- physq_proj1 %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., diet_status == "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)") %>% 
+  subset_samples(., study_week == "week1") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+lactowk1_plot <- lacto_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Lacto-ovo-vegetarian Participants Community Composition Week 1")
+
+lactowk1_plot
+```
+### Pescatarian
+```{r}
+pesc_obj <- physq_proj1 %>% 
+  subset_samples(., diet_status == "Pescatarian") %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., study_week == "week1") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+pescwk1_plot <- pesc_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Flexitarian Participants Community Composition Week 1")
+
+pescwk1_plot
+```
+### Pollo-pescatarian
+```{r}
+pollopesc_obj <- physq_proj1 %>% 
+  subset_samples(., diet_status == "Pollo-pescatarian (only poultry and fish)") %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., study_week == "week1") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+pollopescwk1_plot <- pollopesc_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Pollo-Pescatarain Participants Community Composition Week 1")
+
+pollopescwk1_plot
+```
+### Vegan
+```{r}
+vegan_obj <- physq_proj1 %>% 
+  subset_samples(., supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% 
+  subset_samples(., diet_status == "Vegan") %>% 
+  subset_samples(., study_week == "week1") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+veganwk1_plot <- vegan_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Vegan Participants Community Composition Week 1")
+
+veganwk1_plot
+```
+```{r}
+
+```
+# Dietary Fiber Intake 
+People with different types of diets tend to have different intake of fiber.  
+### Changes in Community Composition 
+
+### Changes in Richness 
+
+### Changes in 
+
+-----
+end
