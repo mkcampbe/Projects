@@ -1,0 +1,1998 @@
+---
+title: "W20 Bio201 Project"
+author: "Mary Kate Campbell"
+date: "3/25/2020"
+output:
+  pdf_document: default
+  html_document: default
+github url: https://github.com/mkcampbe/Projects
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/Documents/UMBio201/Project/")
+```
+# Load Packages
+```{r include=FALSE}
+library(vegan)
+library(tidyverse)
+library(readxl)
+library(broom)
+library(cowplot)
+library(phyloseq)
+set.seed(7)
+source("miseqR copy.R")
+```
+
+# Introduction 
+write a schpeel about my project and what i will be testing and analyzing 
+
+# Load Data
+Import the sample measurements and data. Based on the number of samples per participant, are the data in this file from individual samples or weekly averages?  Based on the number of samples per participants, the data in this file is of weekly averages 
+
+### Import data frames 
+```{r}
+sample_wkly_df <- read_delim("raw_data/sample_measurements_wkly.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE,
+                            col_types = cols(Participant_ID = col_character(),
+                                             Study_week = col_character(),
+                                             Semester = col_character(),
+                                             Supplement_consumed = col_character(),
+                                             Quantity_compliant = col_character(),
+                                             Frequency = col_character(),
+                                             pH_median = col_double(),
+                                             pH_mean = col_double(),
+                                             Bristol_median = col_logical(),
+                                             Bristol_mean = col_logical(),
+                                             Blood_glucose_median = col_double(),
+                                             Blood_glucose_mean = col_double(),
+                                             Acetate_median = col_double(),
+                                             Acetate_mean = col_double(),
+                                             Butyrate_median = col_double(),
+                                             Butyrate_mean = col_double(),
+                                             Propionate_median = col_double(),
+                                             Propionate_mean = col_double()
+                                             ))
+sample_individ_df <- read_delim("raw_data/sample_measurments_indv.txt",
+                                delim = "\t", escape_double = FALSE,
+                                col_types = cols(.default = col_character(),
+                                                 Sample_number = col_double(),
+                                                 Final_weight = col_double(),
+                                                 Acetate_mM = col_double(),
+                                                 Acetate_mmol_kg = col_double(),
+                                                 Butyrate_mM = col_double(),
+                                                 Butyrate_mmol_kg = col_double(),
+                                                 Propionate_mM = col_double(),
+                                                 Propionate_mmol_kg = col_double(),
+                                                 pH = col_logical(),
+                                                 Status = col_logical(),
+                                                 Bristol_score = col_logical(),
+                                                 Bristol_numeric = col_logical()))
+
+fibdiet_df <- read_delim("raw_data/Fiber_diet_data.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE,
+                            col_types = cols( Participant_ID = col_character(),
+                                              Semester = col_character(),
+                                              Study_week = col_character(),
+                                              Tracker = col_character(),
+                                              Fiber_g = col_double()) )
+
+diet_stat_df <- read_delim("curated_data/veg_meat_data_edited2.txt",
+                           delim = "\t", escape_double = FALSE, 
+                           trim_ws = TRUE,
+                           col_types = cols(Participant_ID = col_character(),
+                                            diet_status = col_character(),
+                                            meat_freq = col_character(),
+                                            red_meat_freq = col_character()))
+```
+### Import the weekly shared table.
+```{r}
+shared_tablewkly_project <- read_delim("raw_data/shared_table_wkly.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE, na=c("NA"),
+                            col_types = list()) %>% 
+  select(ID, starts_with("Otu")) %>% 
+  column_to_rownames(var = "ID") %>% 
+  # convert data frame to matrix object
+  as.matrix() %>% 
+  # convert to phyloseq object 
+  otu_table(., taxa_are_rows = FALSE)  
+```
+### Import the taxonomy table.
+```{r}
+taxa_project <- read_delim("raw_data/taxonomy_table.txt",
+                            delim = "\t", escape_double = FALSE, 
+                            trim_ws = TRUE, na=c("NA")) %>%
+  # sequence variants (OTUs) need to be made into row names 
+  column_to_rownames(var = "OTUs") %>% 
+  as.matrix() %>%
+  # convert to phyloseq object 
+  tax_table()  
+```
+### Create phyloseq objects 
+```{r}
+diets_df2 <- diet_stat_df %>%  
+  select(Participant_ID,diet_status,study_week) %>% 
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+
+samples_df2 <- sample_wkly_df %>%  
+  # make all column names lower case
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+
+samples2_df <- full_join(samples_df2,diets_df2) #joined weekly sample data and diet data 
+  
+fibdiet2_df <- fibdiet_df %>% 
+  select(Participant_ID,Semester,Study_week,Fiber_g) %>% 
+  rename_all(tolower) %>%
+  mutate(sample_id = paste(participant_id, study_week, sep = "_")) %>% 
+  filter(str_detect(sample_id, "^U")) %>%
+  # remove duplicate sample ids
+  distinct(sample_id, .keep_all = TRUE)
+  
+samples4_df <- full_join(samples2_df,fibdiet2_df) #joined dietary fiber data with (weekly sample + diet data)
+
+samples5_df <- samples4_df %>% 
+  filter(frequency =="2xdaily", #according to prior analyses, only 2x daily had measurable effects
+         quantity_compliant == "yes", #want them to quantity compliant so they dont skew data
+         study_week == "week1" | study_week == "week3", #use data from weeks 1 & 3 only for comparison 
+         supplement_consumed == "BRMPS" | supplement_consumed == "LOODAT") %>% #I only wanted to look at these starch supplements
+  mutate(diet_status = recode(diet_status, "Vegetarion" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescetarian" = "Pescatarian")) #recoded for spelling errors
+
+write_delim(samples5_df, path = "curated_data/combined_sample_msmts.txt",
+            delim = "\t", col_names = TRUE, quote = FALSE) ##wrote this file so I could make edits on excel 
+  
+samples6_df <- read_delim("curated_data/combined_sample_msmts2.txt",
+                           delim = "\t", escape_double = FALSE, 
+                           trim_ws = TRUE,
+                           col_types = cols()) ##imported edited file 
+samples7_df <- samples6_df %>% 
+  filter(participant_id != "U032") #got rid of participant 32 because they were a total outlier 
+
+diets_project <- samples7_df %>% #convert edited file to matrix 
+    # sample IDs need to be made into row names
+  column_to_rownames(var = "sample_id") %>% 
+  # specify type of phyloseq object
+  sample_data()
+
+physq_proj1 <- phyloseq(shared_tablewkly_project, taxa_project, diets_project) #create first phyloseq object (includes all types of dietary statuses)
+
+samples8_df <- samples7_df %>%  #after running tests I realize that their are not enough participants that are Vegan, Pescatarain, etc (sample size not big enough). So I recode them to either vegetarian or omnivorous. 
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  filter(diet_status != "NA") %>% 
+     # sample IDs need to be made into row names
+  column_to_rownames(var = "sample_id") %>% 
+  # specify type of phyloseq object
+  sample_data()
+
+physq_proj2 <- phyloseq(shared_tablewkly_project, taxa_project, samples8_df) #phylose object #2 (includes only Vegetarian or Omnivorous dietary statuses)
+
+samples9_df <- samples7_df %>%  #divide each participant into 3 groups based on amount of dietary fiber they intake (low, medium, high) for week 1
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  filter(diet_status != "NA",
+         study_week == "week1") %>% 
+  add_column(dietfiber_status_wk1 = NA) #create a new column for one's dietary fiber intake status at week1, set it to NA so I can get rid of all participants that didnt measure their fiber_g later 
+
+samples9_df$dietfiber_status_wk1[samples9_df$fiber_g < 16] <- "low"
+samples9_df$dietfiber_status_wk1[samples9_df$fiber_g > 15 & samples9_df$fiber_g < 26] <- "medium"
+samples9_df$dietfiber_status_wk1[samples9_df$fiber_g > 25] <- "high"
+
+samples14_df <- samples9_df %>%  
+  drop_na(dietfiber_status_wk1) #if fiber_g were not measured for that participant, they were removed from data frame 
+
+samples10_df <- samples7_df %>% #divide each participant into 3 groups based on amount of dietary fiber they intake (low, medium, high) for week 3 
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  filter(diet_status != "NA",
+         study_week == "week3") %>% 
+  add_column(dietfiber_status_wk3 = NA) #create a new column for one's dietary fiber intake status at week 3, set it to NA so I can get rid of all participants that didnt measure their fiber_g later
+
+samples10_df$dietfiber_status_wk3[samples10_df$fiber_g > 44 & samples10_df$fiber_g < 56] <- "low"
+samples10_df$dietfiber_status_wk3[samples10_df$fiber_g > 55 & samples10_df$fiber_g < 66] <- "medium"
+samples10_df$dietfiber_status_wk3[samples10_df$fiber_g > 65] <- "high"
+
+samples13_df <- samples10_df %>% 
+  drop_na(dietfiber_status_wk3) # if fiber_g were not measured for that participant, they were removed from the data frame because we were unable to draw any conclusions on whether their differences were due to how much fiber they intook.
+
+samples11_df <- full_join(samples14_df, samples13_df) #full join these data frames, so all data is kept from both 
+
+samples12_df <- samples11_df %>% #convert to matrix 
+  # sample IDs need to be made into row names
+  column_to_rownames(var = "sample_id") %>% 
+  # specify type of phyloseq object
+  sample_data()
+
+physq_proj3 <- phyloseq(shared_tablewkly_project, taxa_project, samples12_df) #phyloseq object #3 for analyses of participants who had low, medium, or high dietary fiber intake 
+
+samples15_df <- samples7_df %>%  #after running analyses using phyloseq object 3, was not statistical significance between 3 groups, so I decide to break them into 2 instead (low & high)
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  filter(diet_status != "NA",
+         study_week == "week1") %>% 
+  add_column(dietfiber_status_wk1 = NA) 
+
+samples15_df$dietfiber_status_wk1[samples15_df$fiber_g < 19] <- "low"
+samples15_df$dietfiber_status_wk1[samples15_df$fiber_g > 18] <- "high"
+
+samples16_df <- samples15_df %>%  
+  drop_na(dietfiber_status_wk1)
+
+samples17_df <- samples7_df %>% 
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  filter(diet_status != "NA",
+         study_week == "week3") %>% 
+  add_column(dietfiber_status_wk3 = NA) 
+
+samples17_df$dietfiber_status_wk3[samples17_df$fiber_g > 44 & samples17_df$fiber_g < 59] <- "low"
+samples17_df$dietfiber_status_wk3[samples17_df$fiber_g > 58 & samples17_df$fiber_g < 100] <- "high"
+
+samples18_df <- samples17_df %>% 
+  drop_na(dietfiber_status_wk3)
+
+samples19_df <- full_join(samples16_df, samples18_df) #full join data frames from week 1 and week 3 
+
+samples20_df <- samples19_df %>% #convert data frame into a matrix
+  # sample IDs need to be made into row names
+  column_to_rownames(var = "sample_id") %>% 
+  # specify type of phyloseq object
+  sample_data()
+physq_proj4 <- phyloseq(shared_tablewkly_project, taxa_project, samples20_df) #create phyloseq object #4 to run analyses on participants that have low or high dietary fiber intake 
+```
+# Diet 
+We are going to look at what types of people have different diets. We then are going to look at their gut microbiome compostion based off 
+
+## Determining Diet 
+```{r}
+#data formatting 
+dietinfo_df <- samples5_df %>%  
+  select(-starts_with("but"), -starts_with("pro"), 
+         -starts_with("ph"), -starts_with("bristol"),
+         -starts_with("blood"),-starts_with("acet"),
+         -starts_with("fiber")) %>% 
+  filter(study_week == "week1") %>% 
+  drop_na()
+
+
+diets_df3 <- dietinfo_df %>% 
+group_by(diet_status, supplement_consumed) %>%  
+summarise(Counts = n()) #look at sample size of each dietary status and supplement consumed 
+
+diets_df3
+diet_tab <- with(dietinfo_df, table(diet_status, supplement_consumed)) 
+diet_tab #turn this into a data table 
+```
+| | BRMPS | LOODAT |
+|:-----:|:-----:|:-----:|:-----:|
+| Flexitarian (primarily vegetarian, but occasionally eat meat)  | 4 | 0 |
+| Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs) | 0 | 2 |
+| Omnivorous | 80  | 17 |
+| Pescatarian | 1  | 1 |
+| Pollo-pescatarian (only poultry and fish) | 0 | 7 |
+| Vegan | 1  | 1 |
+| Vegetarian | 28 | 0 |
+
+### Omnivorous 
+#### Changes in Community Composition 
+##### Community Composition Barplots (Week 1 vs Week 3)
+```{r}
+#make Omnivorous community composition barplots 
+omnivwk1_obj <- physq_proj1 %>% #omnivorous week 1 object 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., diet_status == "Omnivorous" | diet_status == "Pescatarian" | 
+                   diet_status == "Pollo-pescatarian (only poultry and fish)") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+omnivwk1_plot <- omnivwk1_obj %>% #Omnivorous Week 1 barplot 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+    scale_fill_manual(name = "Phylum", 
+                  #these are all the phylum categories, edit based on what bacteria are present 
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Omnivorous Participants Community Composition Week 1")
+
+omnivwk1_plot
+save_plot(omnivwk1_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/week1_omniv.jpg") #save Omnivorous Week1 barplot 
+
+omniv1_plot <- omnivwk1_plot +  
+  theme(legend.position = "none") 
+omniv1_plot
+
+omnivwk3_obj <- physq_proj1 %>% #Omnivorous Week 3 object 
+  subset_samples(., study_week == "week3") %>%  
+  subset_samples(., diet_status == "Omnivorous" | diet_status == "Pescatarian" | 
+                   diet_status == "Pollo-pescatarian (only poultry and fish)") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+omnivwk3_plot <- omnivwk3_obj %>% #omnivorous week 3 barplot 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Omnivorous Participants Community Composition Week 3") #comparing week 1 and week3 barplots we see that no new bacteria phylum appeared. Visually it appears that the abundance of Actinobacteria increased 
+
+omnivwk3_plot
+save_plot(omnivwk3_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/week3_omniv.jpg")
+
+omnivfin_plot <- plot_grid(omniv1_plot, omnivwk3_plot, #combine Omnivorous week1 & week3 barplots 
+          nrow = 1, ncol = 2)
+omnivfin_plot 
+save_plot(omnivfin_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/combined_omnivplot.jpg") #save barplot 
+
+```
+It appears that the community composition between week 1 and week 3 of Omnivores has changed. Looking at the two barplots of community composition it appears that the relative abundance of Actinobacteria has increased. Therefore, we want to calculate Bray-Curtis diversity indices and see if we observe a pattern or not in our ordination plots. 
+#### Beta Diversity 
+Comparing community composition of Omnivores from week 1 to week 3 to see if community composition changed after taking supplement. 
+Ho: Omnivorous Community Composition is the same at week 1 and week 3
+
+Ha: Omnivorous community composition changes from week 1 to week 3. 
+```{r}
+#this compares the community composition of Omnivores from week 1 to week 3 
+#data formatting
+omniv_proj <- physq_proj1 %>%  
+  subset_samples(., diet_status == "Omnivorous" | diet_status == "Pescatarian" | 
+                   diet_status == "Pollo-pescatarian (only poultry and fish)") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_omniv_df <- data.frame(sum = sample_sums(omniv_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_omniv_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(omniv_proj)) #8124
+mean(sample_sums(omniv_proj)) #22183.86
+max(sample_sums(omniv_proj)) #43066
+
+# scale samples to even depth using custom function
+omniv_scale <- omniv_proj %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+omniv_bc <- ordinate(omniv_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+omniv_bc
+  #all stresses less than 0.20 
+
+omnivordplot <- plot_ordination(physeq = omniv_proj, 
+                     ordination = omniv_bc, 
+                     type = "samples", 
+                     color = "study_week", 
+                     shape = "diet_status")
+print(omnivordplot) #it appears that week1 and week 3 Omnivores are randomly scattered above and below 0 
+save_plot(omnivordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/omniv_beta_ordplot.jpg")
+
+# calculate BC index, get distance matrix
+omniv_dat_bray <- phyloseq::distance(omniv_proj, method = "bray") 
+#change method = "jaccard"
+omnivsampledf <- omniv_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+omniv_adn_res <- adonis(formula = omniv_dat_bray ~ study_week, 
+                  data = omnivsampledf)
+
+# view results 
+print(omniv_adn_res)
+
+## R2 = 0.01487, p = 0.31 --> low R2 and high p-value :/ 
+```
+Conclusion: R2 = 0.01634, p-value = 0.442, low R2, low p-value. Since our p-value of 0.442 > our significance level of 0.05. We fail to reject our null hypothesis. There is not enough evidence to suggest that the community of compositon of Omnivores changed from week 1 to week 3. This makes sense because there does not appear to be a pattern in the ordination plot. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+### Vegetarian
+#### Changes in Community Composition
+##### Community Composition Bar Plots (Week 1 vs Week 3)
+```{r}
+vegetwk1_obj <- physq_proj1 %>% #week 1 Vegetarian object 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., diet_status == "Vegetarian" | diet_status == "Vegan" | diet_status == "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)") %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+vegetwk1_plot <- vegetwk1_obj %>% #week 1 Vegetarian barplot 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                              "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                              "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#67b34a",
+                             "#d35238")  ) + #edit this depending on which phylum of bacteria are present 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Vegetarian Participants Community Composition Week 1")
+
+vegetwk1_plot
+save_plot(vegetwk1_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/week1_vegetplot.jpg") #save plot 
+
+vegetwk3_obj <- physq_proj1 %>% #week 3 vegetarian object 
+  subset_samples(., study_week == "week3") %>%  
+  subset_samples(., diet_status == "Vegetarian" | diet_status == "Vegan" | diet_status == "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)")  %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+vegetwk3_plot <- vegetwk3_obj %>% #week 3 vegetarian barplots 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes",
+                             "Lentisphaerae", "Proteobacteria", 
+                              "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1",
+                             "#c9aa3c", "#d4447a",
+                              "#67b34a",
+                             "#d35238")  ) + #in week 3, there is no Fusobacteria present
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Vegetarian Participants Community Composition Week 3")
+
+vegetwk3_plot
+save_plot(vegetwk3_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/week3_veget.jpg")
+
+vegetfin_plot <- plot_grid(vegetwk1_plot, vegetwk3_plot,
+          nrow = 1, ncol = 2)
+vegetfin_plot #combine plots 
+
+save_plot(vegetfin_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/combined_vegetplot.jpg")
+
+```
+It appears that the community composition between week 1 and week 3 of Vegetarians has changed. Looking at the two barplots of community composition it appears that the relative abundance of Actinobacteria has increased. Therefore, we want to calculate Bray-Curtis diversity indices and see if we observe a pattern or not in our ordination plots. 
+#### Beta Diversity
+Comparing community composition of Vegetarians from week 1 to week 3 to see if community composition changed after taking supplement. 
+Ho: Vegetarian Community Composition is the same at week 1 and week 3
+
+Ha: Vegetarian community composition changes from week 1 to week 3. 
+```{r} 
+#this compares the community composition of Vegetarians from week 1 to week 3 
+veget_proj <- physq_proj1 %>%  
+  subset_samples(., diet_status == "Vegetarian" | diet_status == "Vegan" | diet_status == "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_veget_df <- data.frame(sum = sample_sums(veget_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_veget_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank()) 
+
+#Summary statistics on read counts 
+min(sample_sums(veget_proj)) #12535
+mean(sample_sums(veget_proj)) #22007.06
+max(sample_sums(veget_proj)) #29009
+
+# scale samples to even depth using custom function
+veget_scale <- veget_proj %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+veget_bc <- ordinate(veget_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+omniv_bc
+  #all stresses less than 0.20 
+
+vegetordplot <- plot_ordination(physeq = veget_proj, 
+                     ordination = veget_bc, 
+                     type = "samples", 
+                     color = "study_week", 
+                     shape = "diet_status")
+print(vegetordplot) #week 1 and week 3 Vegetarians seem to be randomly scattered above and below 0  
+
+save_plot(vegetordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/veget_beta_ordplot.jpg")
+ 
+# calculate BC index, get distance matrix
+veget_dat_bray <- phyloseq::distance(veget_proj, method = "bray") 
+#change method = "jaccard"
+vegetsampledf <- veget_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+veget_adn_res <- adonis(formula = veget_dat_bray ~ study_week, 
+                  data = vegetsampledf)
+
+# view results 
+print(veget_adn_res)
+
+#R2 = 0.0141, p = 0.834 ---> low R2, high p-value :/
+```
+Conclusion: R2 = 0.02202, p-value = 0.112  low R2, low p-value. Since our p-value of 0.112 > our significance level of 0.05. We fail to reject our null hypothesis. There is not enough evidence to suggest that the community of compositon of Vegetarians changed from week 1 to week 3. This makes sense because there does not appear to be a pattern in the ordination plot. Additionally, since our R2 is low, our grouping of samples by diet status is weak.
+
+### Combining Community Composition Plots 
+Combine the barplots of community composition of week 1 to week 3 for Vegetarian and Omnivores.
+```{r}
+combinedfin_plot <- plot_grid(omnivfin_plot, vegetfin_plot,
+          nrow = 2, ncol = 1)
+combinedfin_plot #combine all 4 plots to compare visually, community compositions between week1 and week 3 of Omnivores and Vegetarians 
+
+save_plot(combinedfin_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/ final_dietccplot.jpg")
+
+combinedord_plot <- plot_grid(omnivordplot, vegetordplot,
+          nrow = 1, ncol = 2)
+combinedord_plot
+save_plot(combinedord_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/final_dietordplotvegvsom.jpg")
+```
+
+## Beta Diversity of all diet statuses by week 
+Looked at week 1 and compared the community composition of all dietary statuses.  
+Ho: Community Composition is the same for all diet statuses at week 1 
+
+Ha: At least one diet status has a different Community Composition at week 1
+```{r} 
+wk1_proj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week1") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk1_df <- data.frame(sum = sample_sums(wk1_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk1_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk1_proj)) #7933
+mean(sample_sums(wk1_proj)) #22114.73
+max(sample_sums(wk1_proj)) #35295
+
+# scale samples to even depth using custom function
+wk1_scale <- wk1_proj %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk1_bc <- ordinate(wk1_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk1_bc
+  #all stresses less than 0.20 
+
+wk1ordplot <- plot_ordination(physeq = wk1_proj, 
+                     ordination = wk1_bc, 
+                     type = "samples", 
+                     color = "diet_status", 
+                     shape = "supplement_consumed")
+print(wk1ordplot) #appears that all dietary statuses are randomly scattered above and below 0
+save_plot(wk1ordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/alldiets_wk1_ordplot.jpg")
+
+# start with same phyloseq object as above 
+# calculate BC index, get distance matrix
+wk1_dat_bray <- phyloseq::distance(wk1_proj, method = "bray") 
+#change method = "jaccard"
+wk1sampledf <- wk1_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk1_adn_res <- adonis(formula = wk1_dat_bray ~ diet_status, 
+                  data = wk1sampledf)
+
+# view results 
+print(wk1_adn_res)
+
+#R2 = .12481, p = 0.001, low R2, low p-value 
+
+```
+Conclusion: R2 = .12481, p = 0.001, low R2, low p-value. Since our p-value of 0.001 < our significance level of 0.05. We reject our null hypothesis in favor of the alternative that at least one diet status has a different community composition at week 1. However, since our R2 is low, our grouping of samples by diet status is weak.  
+
+Looked at week 3 and compared the community composition of all dietary statuses.  
+Ho: Community Composition is the same for all diet statuses at week 3 
+
+Ha: At least one diet status has a different Community Composition at week 3 
+```{r}
+wk3_proj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week3") %>% 
+  subset_samples(., diet_status != "NA") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk3_df <- data.frame(sum = sample_sums(wk3_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk3_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk3_proj)) #9518
+mean(sample_sums(wk3_proj)) #21791.89
+max(sample_sums(wk3_proj)) #42633
+
+# scale samples to even depth using custom function
+wk3_scale <- wk3_proj %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk3_bc <- ordinate(wk3_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk3_bc
+  #all stresses less than 0.20 
+
+wk3ordplot <- plot_ordination(physeq = wk3_proj, 
+                     ordination = wk3_bc, 
+                     type = "samples", 
+                     color = "diet_status", 
+                     shape = "supplement_consumed")
+print(wk3ordplot) #appears that all dietary statutes are randomly scattered above and below 0 
+save_plot(wk3ordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/alldiets_wk3_ordplot.jpg")
+
+# start with same phyloseq object as above 
+# calculate BC index, get distance matrix
+wk3_dat_bray <- phyloseq::distance(wk3_proj, method = "bray") 
+#change method = "jaccard"
+wk3sampledf <- wk3_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk3_adn_res <- adonis(formula = wk3_dat_bray ~ diet_status, 
+                  data = wk3sampledf)
+
+# view results 
+print(wk3_adn_res)
+
+#R2 = .12104, p = 0.005 --> low R2, low p-value.
+```
+Conclusion: R2 = .12104, p = 0.005, low R2, low p-value. Since our p-value of 0.005 < our significance level of 0.05. We reject our null hypothesis in favor of the alternative that at least one diet status has a different community composition at week 3. However, since our R2 is low, our grouping of samples by diet status is weak.  
+
+
+```{r}
+alldietstatord_plot <- plot_grid(wk1ordplot, wk3ordplot,
+          nrow = 1, ncol = 2)
+alldietstatord_plot #combine all 4 plots to compare visually, community compositions between week1 and week 3 of Omnivores and Vegetarians 
+
+save_plot(alldietstatord_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/final_alldietstatordplot.jpg")
+```
+### Beta Diversity Vegetarian vs Omnivorous by Week 
+Compare the community composition of Vegetarians and Omnivores at week 1 
+Ho: Community Composition is the same for Vegetarians and Omnivores at week 1 
+
+Ha: At least one diet status has a different Community Composition at week 1
+```{r}
+#compares community composition of vegetarians and omnivores at week 1 
+wk1_proj2 <- physq_proj2 %>%
+  subset_samples(., study_week == "week1") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk1new_df <- data.frame(sum = sample_sums(wk1_proj2))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk1new_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk1_proj2)) #7933
+mean(sample_sums(wk1_proj2)) #22114.73
+max(sample_sums(wk1_proj2)) #35295
+
+# scale samples to even depth using custom function
+wk1new_scale <- wk1_proj2 %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk1new_bc <- ordinate(wk1new_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk1new_bc
+  #all stresses less than 0.20 
+
+wk1newordplot <- plot_ordination(physeq = wk1_proj2, 
+                     ordination = wk1new_bc, 
+                     type = "samples", 
+                     color = "diet_status", 
+                     shape = "supplement_consumed")
+print(wk1newordplot)
+
+save_plot(wk1newordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/vegvsomniv_wk1_ordplot.jpg")
+
+# start with same phyloseq object as above 
+# calculate BC index, get distance matrix
+wk1new_dat_bray <- phyloseq::distance(wk1_proj2, method = "bray") 
+#change method = "jaccard"
+wk1newsampledf <- wk1_proj2 %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk1new_adn_res <- adonis(formula = wk1new_dat_bray ~ diet_status, 
+                  data = wk1newsampledf)
+
+# view results 
+print(wk1new_adn_res) #R2 = 0.01634, p-value = 0.442 --> low R2, high p-value 
+
+```
+Conclusion: R2 = .0.01634, p = 0.442, low R2, high p-value. Since our p-value of 0.442 > our significance level of 0.05. We fail to reject our null hypothesis. There is no evidence to suggest that at least one diet status has a different community composition at week 1. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+Compare the community composition of Vegetarians and Omnivores at week 3
+Ho: Community Composition is the same for Vegetarians and Omnivores at week 3 
+
+Ha: At least one diet status has a different Community Composition at week 3 
+```{r} 
+#compares the community composition of vegetarians and omnivores at week 3 
+wk3_proj2 <- physq_proj2 %>%
+  subset_samples(., study_week == "week3") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk3new_df <- data.frame(sum = sample_sums(wk3_proj2))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk3new_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk3_proj2)) #7933
+mean(sample_sums(wk3_proj2)) #22114.73
+max(sample_sums(wk3_proj2)) #35295
+
+# scale samples to even depth using custom function
+wk3new_scale <- wk3_proj2 %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk3new_bc <- ordinate(wk3new_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk3new_bc
+  #all stresses less than 0.20 
+
+wk3newordplot <- plot_ordination(physeq = wk3_proj2, 
+                     ordination = wk3new_bc, 
+                     type = "samples", 
+                     color = "diet_status", 
+                     shape = "supplement_consumed")
+print(wk3newordplot)
+save_plot(wk3newordplot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/vegvsomniv_wk3_ordplot.jpg")
+
+# start with same phyloseq object as above 
+# calculate BC index, get distance matrix
+wk3new_dat_bray <- phyloseq::distance(wk3_proj2, method = "bray") 
+#change method = "jaccard"
+wk3newsampledf <- wk3_proj2 %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk3new_adn_res <- adonis(formula = wk3new_dat_bray ~ diet_status, 
+                  data = wk3newsampledf)
+
+# view results 
+print(wk3new_adn_res) #R2 = 0.02202, p-value = 0.112 ---> low R2, high p-value 
+```
+Conclusion: R2 = .0.02202, p = 0.112, low R2, high p-value. Since our p-value of 0.112 > our significance level of 0.05. We fail to reject our null hypothesis. There is no evidence to suggest that at least one diet status has a different community composition at week 3. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+```{r}
+vegvsomnivord1_plot <- plot_grid(wk1newordplot, wk3newordplot,
+          nrow = 1, ncol = 2)
+vegvsomnivord1_plot #combine all 4 plots to compare visually, community compositions between week1 and week 3 of Omnivores and Vegetarians 
+
+save_plot(vegvsomnivord1_plot, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/final_vegvsomnivordplot.jpg")
+```
+
+## Richness 
+### Richness tests
+```{r}
+richness_df <- samples7_df %>% 
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  select(participant_id, study_week, semester, supplement_consumed, frequency, sample_id, diet_status)
+```
+Comparing Richness of each dietary status from week 1 to week 3
+```{r}
+richness2_df <- physq_proj2 %>% 
+  estimate_richness(., split = TRUE, measures = c("Observed")) %>%  
+  rownames_to_column(var = "sample_id") %>% 
+  inner_join(richness_df, by = "sample_id") %>%  
+  rename(richness = Observed) %>%
+  group_by(participant_id, study_week, semester, 
+           frequency, supplement_consumed, diet_status) %>%
+  summarise(avg_richness = round(mean(richness), digits = 0))
+
+richness2_df #data frame to compare richness's of Omnivores vs Vegetarians 
+```
+```{r}
+#plots 
+richness_plot1 <- physq_proj2 %>% 
+  plot_richness(., "study_week", measures = c("Observed")) +
+  facet_grid("diet_status") +
+  ylab("Richness (Observed ESVs)") + xlab(NULL) + 
+  geom_violin(aes(color = diet_status)) + #add violin in color
+  geom_jitter(aes(color = diet_status)) +  #add individual points in color 
+  theme(legend.position = "none") +
+  ggtitle("Richness by Dietary Status")
+
+richness_plot1 #visual of richnesses of Omnivores and Vegetarians at wk 1 vs wk 3 
+
+save_plot(richness_plot1, ncol = 1, nrow = 1, filename = "figures/Diet Status Figures/richness1plot.jpg")
+
+```
+```{r}
+rich_omniv <- richness2_df %>%
+  filter(diet_status == "Omnivorous")
+
+rich_omniv %>%
+  group_by(study_week) %>%
+  summarise(counts = n())
+
+# normality checks
+rich_omnivwk1 <- rich_omniv %>%
+  filter(study_week == "week1")
+rich_omnivwk3 <- rich_omniv %>%
+  filter(study_week == "week3")
+shapiro.test(rich_omnivwk1$avg_richness) #p-value = 0.9969
+shapiro.test(rich_omnivwk3$avg_richness) # p-value = 0.4251
+# histogram and qqplot for normality checks
+ggplot(rich_omnivwk1, aes(x=avg_richness)) +
+  geom_histogram() 
+qqnorm(rich_omnivwk1$avg_richness); qqline(rich_omnivwk1$avg_richness)
+ggplot(rich_omnivwk3, aes(x=avg_richness)) +
+  geom_histogram() 
+qqnorm(rich_omnivwk3$avg_richness); qqline(rich_omnivwk3$avg_richness)
+
+# format data for test
+rich_omniv2 <- rich_omniv %>%
+  spread(key = "study_week", value = "avg_richness") %>%
+  drop_na()
+
+# conduct non-parametric t-test based on results above
+wilcox.test(rich_omniv2$week1, rich_omniv2$week3, 
+            alternative = "two.sided", paired = TRUE) # p-value = 0.04083
+```
+Conclusion: Since our p-value of 0.04083 < our significance level of 0.05, we reject the null hypothesis. It appears that the richness did change from week 1 to week 3 for Omnivorous participants because our p-value of 0.04083. Additionally, the widest part of the violin plots of the average richness value between week 1 and week 3 appear to be different.  
+
+Compare richness of Vegetarians from week 1 to week 3 
+```{r}
+rich_veget <- richness2_df %>%
+  filter(diet_status == "Vegetarian")
+
+rich_veget %>%
+  group_by(study_week) %>%
+  summarise(counts = n())
+
+# normality checks
+rich_vegetwk1 <- rich_veget %>%
+  filter(study_week == "week1")
+shapiro.test(rich_vegetwk1$avg_richness) #p-value = 0.1291
+ggplot(rich_vegetwk1, aes(x=avg_richness)) +
+  geom_histogram() 
+qqnorm(rich_vegetwk1$avg_richness); qqline(rich_vegetwk1$avg_richness) #does not appear to be normal 
+
+rich_vegetwk3 <- rich_veget %>%
+  filter(study_week == "week3")
+shapiro.test(rich_vegetwk3$avg_richness) # p-value = 0.3135
+ggplot(rich_vegetwk3, aes(x=avg_richness)) +
+  geom_histogram() 
+qqnorm(rich_vegetwk3$avg_richness); qqline(rich_vegetwk3$avg_richness) #approximately normal
+
+# format data for test
+rich_veget2 <- rich_veget %>%
+  spread(key = "study_week", value = "avg_richness") %>%
+  drop_na()
+
+# conduct test 
+wilcox.test(rich_veget2$week1, rich_veget2$week3, 
+            alternative = "two.sided", paired = TRUE)
+```
+Conclusion: Based on our test, it appears that the richness did not change from week 1 to week 3 for Vegetarian participants because our p-value of 0.0775 is greater than our significance level of 0.05. The widest part of the violin plots of the average richness value between week 1 and week 3 do not appear to be that different. 
+
+
+# Dietary Fiber Intake 
+People with different types of diets tend to have different intake of fiber. 
+
+Do Vegetarians or Omnivorous Humans tend to have higher dietary fiber intake?
+```{r}
+mkfiber_df <- samples7_df %>%  #this data frame is created to look at summary statistics of our data 
+  mutate(diet_status = recode(diet_status, "Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)" = "Vegetarian")) %>%
+  mutate(diet_status = recode(diet_status, "Pescatarian" = "Omnivorous")) %>%  
+  mutate(diet_status = recode(diet_status, "Pollo-pescatarian (only poultry and fish)" = "Omnivorous")) %>% 
+  mutate(diet_status = recode(diet_status, "Vegan" = "Vegetarian")) %>% 
+  select(participant_id, study_week, semester, supplement_consumed, frequency, diet_status, sample_id, fiber_g) %>% 
+  filter(study_week == "week1",
+         diet_status != "Flexitarian (primarily vegetarian, but occasionally eat meat)") %>% 
+  drop_na(fiber_g, diet_status)
+# average dietary fiber intake and sd of those who are Vegetarian
+mean(subset(mkfiber_df, diet_status == "Vegetarian")$fiber_g) #mean = 19.125 grams
+sd(subset(mkfiber_df, diet_status == "Vegetarian")$fiber_g) #sd = 7.011249 grams
+
+
+# average dietary fiber intake and sd of those who are Omnivorous
+mean(subset(mkfiber_df, diet_status == "Omnivorous")$fiber_g) #mean = 20.30392 grams
+sd(subset(mkfiber_df,diet_status == "Omnivorous")$fiber_g) #sd = 9.835065 grams
+```
+It seems that dietary fiber intake for participants that are Omnivorous and Vegetarian are about the same. Therefore, we will continue to do further statistical analyses. 
+```{r}
+mkfiber_df2 <- mkfiber_df %>% 
+  group_by(diet_status) %>% 
+  summarise(sample_size = n()) #102 Omnivores and 24 Vegetarians --> continue anyways and account for this later 
+
+mkfiber_plot <- mkfiber_df %>% 
+  ggplot(aes(x = diet_status, 
+             y = fiber_g)) + 
+  geom_violin() + geom_jitter() 
+mkfiber_plot
+
+save_plot(mkfiber_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/mkfiber_plot.jpg")
+
+# Subset data to generate the first group (Omnivores)
+omniv_fiber <- mkfiber_df %>%
+  filter(diet_status == "Omnivorous")
+shapiro.test(omniv_fiber$fiber_g) #p-value = 2.568e-07
+ggplot(omniv_fiber, aes(x = fiber_g)) + geom_histogram() #skewed right distribution 
+qqnorm(omniv_fiber$fiber_g); qqline(omniv_fiber$fiber_g)
+
+veget_fiber <- mkfiber_df %>%
+  filter(diet_status == "Vegetarian") 
+shapiro.test(veget_fiber$fiber_g) #p-value = 0.3244
+ggplot(veget_fiber, aes(x = fiber_g)) + geom_histogram() #assume normal if had more vegetarian participants, but does not appear to be normal 
+qqnorm(veget_fiber$fiber_g); qqline(veget_fiber$fiber_g)
+
+var.test(x = omniv_fiber$fiber_g, 
+         y = veget_fiber$fiber_g, 
+         alternative = "two.sided") #p-value = 0.06474 --> variances are NOT equal 
+
+wilcox.test(x = omniv_fiber$fiber_g, 
+            y = veget_fiber$fiber_g, 
+            paired = FALSE,
+            alternative = "less") #use non-parametric t-test because vegetarian and omnivorous distributions were not normal  #p-value = .5679 
+```
+Conclusion: Since our p-value of 0.5679 is greater than our significance level of 0.05, we fail to reject our null hypothesis. There is not enough information to suggest that vegetarians consume more fiber than omnivores. 
+
+Therefore, we are going to classify participants by how much fiber they intake and analyze changes in community composition by those groupings.
+### Changes in Community Composition 
+#### Low Dietary Fiber Consumption 
+##### Community Composition Barplots (Week1 vs Week 3)
+```{r}
+lowdietfibwk1_obj <- physq_proj1 %>% #Low Dietary fiber intake object for week1 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., fiber_g > 0 & fiber_g < 16) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+lowdietfiberwk1_plot <- lowdietfibwk1_obj %>% #barplot of community composition of low dietary fiber intake participants at week 1
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) +   
+  scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#67b34a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming Low Amounts of Dietary Fiber Community Composition Week 1")
+
+lowdietfiberwk1_plot
+save_plot(lowdietfiberwk1_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week1_lowdietfib.jpg")
+
+lowdietfibwk3_obj <- physq_proj1 %>% # low dietary intake object for week 3 
+  subset_samples(., study_week == "week3") %>%  
+  subset_samples(., fiber_g > 44 & fiber_g < 56) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+lowdietfiberwk3_plot <- lowdietfibwk3_obj %>% #barplot of community compositon at week 3 for low dietary fiber intake participants
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) + 
+  scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria", 
+                             "Synergistetes", 
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#67b34a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming Low Amounts of Dietary Fiber Community Composition Week 3")
+
+lowdietfiberwk3_plot
+save_plot(lowdietfiberwk3_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week3_lowdietfib.jpg")
+
+lowdietfib_plot <- plot_grid(lowdietfiberwk1_plot, lowdietfiberwk3_plot,
+          nrow = 1, ncol = 2) #combine week 1 and week 3community composition barplots of participants' deemed to intake low amounts of dietary fiber 
+lowdietfib_plot
+save_plot(lowdietfib_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/final_lowdietfib.jpg")
+```
+#### Medium Dietary Fiber Consumption
+##### Community Composition Barplots (Week 1 vs Week 3)
+```{r}
+meddietfibwk1_obj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., fiber_g > 15 & fiber_g < 26) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+meddietfiberwk1_plot <- meddietfibwk1_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) +
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", "Fusobacteria", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1", "#bd7a43",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming Medium Amounts of Dietary Fiber Community Composition Week 1")
+
+meddietfiberwk1_plot
+save_plot(meddietfiberwk1_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week1_meddietfib.jpg")
+
+meddietfibwk3_obj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week3") %>%  
+  subset_samples(., fiber_g > 55 & fiber_g < 66) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+meddietfiberwk3_plot <- meddietfibwk3_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) +
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming Medium Amounts of Dietary Fiber Community Composition Week 3")
+meddietfiberwk3_plot
+save_plot(meddietfiberwk3_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week3_meddietfib.jpg")
+
+meddietfib_plot <- plot_grid(meddietfiberwk1_plot, meddietfiberwk3_plot,
+          nrow = 1, ncol = 2) #combine week 1 and week 3community composition barplots of participants' deemed to intake medium amounts of dietary fiber 
+meddietfib_plot
+save_plot(meddietfib_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/final_meddietfib.jpg")
+```
+#### High Dietary Fiber Consumption 
+##### Community Composition Barplots (Week 1 vs Week 3)
+```{r}
+highdietfibwk1_obj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week1") %>%  
+  subset_samples(., fiber_g > 25 & fiber_g < 60) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+highdietfiberwk1_plot <- highdietfibwk1_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) +
+    scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes", 
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) + 
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming High Amounts of Dietary Fiber Community Composition Week 1")
+
+highdietfiberwk1_plot
+save_plot(highdietfiberwk1_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week1_highdietfib.jpg")
+
+highdietfibwk3_obj <- physq_proj1 %>% 
+  subset_samples(., study_week == "week3") %>%  
+  subset_samples(., fiber_g > 65 & fiber_g < 100) %>% 
+  tax_glom("Phylum") %>%
+  # convert counts to relative abundance 
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%
+  # convert phyloseq object (matrix) to data frame 
+  psmelt() %>%
+  # sort alphabetically 
+  arrange(Phylum) %>%
+  # Calculate weekly mean of relative abundance
+  group_by(participant_id, study_week, diet_status, semester, 
+           frequency, supplement_consumed, fiber_g, Phylum, OTU) %>%
+  summarise(relative_abundance = mean(Abundance, na.rm = TRUE)) %>%
+  # remove low abundance taxa
+  filter(relative_abundance > 0.001)
+
+highdietfiberwk3_plot <- highdietfibwk3_obj %>% 
+  ggplot(aes(x = participant_id, y = relative_abundance,
+             fill = Phylum,
+             study_week, frequency)) +
+  scale_fill_manual(name = "Phylum",
+                  #these are all the phylum categories
+                  breaks = c("Actinobacteria", "Bacteria_unclassified", 
+                             "Bacteroidetes", 
+                             "Firmicutes",
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #these are updated names for the phyla
+                  labels = c("Actinobacteria", "Unclassified", 
+                             "Bacteroidetes",
+                             "Firmicutes",
+                             "Lentisphaerae", "Proteobacteria",
+                             "Verrucomicrobia"), 
+                  #colors for each category
+                  values = c("#4bb092", "#618bcb",
+                             "#b95d6a",
+                             "#c783c1",
+                             "#c9aa3c", "#d4447a",
+                             "#d35238")  ) +
+  # layer for stacked bar plot 
+  geom_bar(stat = "identity") +
+  # clean up x-axis 
+  theme(axis.title.x = element_blank(), #remove x-axis label 
+        axis.text.x =  element_text(angle = 90, #rotate tick labels 
+                                    vjust = 0.5,
+                                    hjust = 0.5,
+                                    size = 8)) +
+  # clean up y-axis
+  ylab("Relative Abundance\n(% total sequences)") +
+  ggtitle("Participants Consuming High Amounts of Dietary Fiber Community Composition Week 3")
+highdietfiberwk3_plot
+save_plot(highdietfiberwk3_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/week3_highdietfib.jpg")
+
+highdietfib_plot <- plot_grid(highdietfiberwk1_plot, highdietfiberwk3_plot,
+          nrow = 1, ncol = 2) #combine week 1 and week 3community composition barplots of participants' deemed to intake high amounts of dietary fiber 
+highdietfib_plot
+save_plot(highdietfib_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/final_highdietfib.jpg")
+```
+```{r}
+finaldietfib_plot <- plot_grid(lowdietfib_plot, meddietfib_plot, highdietfib_plot,
+          nrow = 3, ncol = 1 ) #combine week 1 and week 3community composition barplots of participants' deemed to intake medium amounts of dietary fiber 
+finaldietfib_plot
+save_plot(finaldietfib_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/final_dietfib.jpg")
+```
+#### Beta Diversity 
+##### Low vs Medium vs High 
+Compare Community Composition of Participants with Low vs Medium vs High Dietary Fiber intake at week 1: 
+Ho: The Community Composition is the same for Participants with Low vs Medium vs High Dietary Fiber intake at week 1 
+Ha: At least one group of participants (low, medium, high dietary fiber intake) has a different community composition at week 1. 
+```{r}
+wk1fib_proj <- physq_proj3 %>%  
+  subset_samples(., study_week =="week1") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk1fib_df <- data.frame(sum = sample_sums(wk1fib_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk1fib_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk1fib_proj)) #7920
+mean(sample_sums(wk1fib_proj)) #21030.62
+max(sample_sums(wk1fib_proj)) #35259
+
+# scale samples to even depth using custom function
+wk1fib_scale <- wk1fib_proj%>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk1fib_bc <- ordinate(wk1fib_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk1fib_bc
+  #all stresses less than 0.20 
+
+wk1fibordplot <- plot_ordination(physeq = wk1fib_proj, 
+                     ordination = wk1fib_bc, 
+                     type = "samples", 
+                     color = "dietfiber_status_wk1", 
+                     shape = "diet_status")
+print(wk1fibordplot)
+save_plot(wk1fibordplot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/alldietfib_wk1_ordplot.jpg")
+
+
+
+wk1fib_dat_bray <- phyloseq::distance(wk1fib_proj, method = "bray") 
+wk1fib_sampledf <- wk1fib_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk1fib_adn_res <- adonis(formula = wk1fib_dat_bray ~ dietfiber_status_wk1, 
+                  data = wk1fib_sampledf)
+
+# view results
+print(wk1fib_adn_res) #R2 = 0.03461, p-value = 0.693
+```
+Conclusion: R2 = 0.03461, p-value = 0.693, low R2, low p-value. Since our p-value of 0.693 > our significance level of 0.05. We fail reject our null hypothesis. There is not enough statistical evidence to suggest that at least one group of dietary fiber intake has a different community composition at week 1. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+Compare Community Composition of Participants with Low vs Medium vs High amounts of Dietary Fiber intake at week 3: 
+Ho: The Community Composition is the same for Participants with Low vs Medium vs High amounts of Dietary Fiber intake at week 3 
+Ha: At least one group of participants (low, medium, high amounts of dietary fiber intake) has a different community composition at week 3. 
+```{r}
+wk3fib_proj <- physq_proj3 %>%  
+  subset_samples(., study_week =="week3") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk3fib_df <- data.frame(sum = sample_sums(wk3fib_proj))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk3fib_df, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk3fib_proj)) #9290
+mean(sample_sums(wk3fib_proj)) #20771.23
+max(sample_sums(wk3fib_proj)) #38765
+
+# scale samples to even depth using custom function
+wk3fib_scale <- wk3fib_proj%>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk3fib_bc <- ordinate(wk3fib_scale, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray") 
+wk3fib_bc
+  #all stresses less than 0.20 
+
+wk3fibordplot <- plot_ordination(physeq = wk3fib_proj, 
+                     ordination = wk3fib_bc, 
+                     type = "samples", 
+                     color = "dietfiber_status_wk3", 
+                     shape = "diet_status")
+print(wk3fibordplot)
+save_plot(wk3fibordplot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/alldietfibs_wk3_ordplot.jpg")
+
+
+wk3fib_dat_bray <- phyloseq::distance(wk3fib_proj, method = "bray") 
+wk3fib_sampledf <- wk3fib_proj %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk3fib_adn_res <- adonis(formula = wk3fib_dat_bray ~ dietfiber_status_wk3, 
+                  data = wk3fib_sampledf)
+
+# view results 
+print(wk3fib_adn_res) #R2 = 0.03897, p-value = 0.418
+```
+Conclusion: R2 = 0.03897, p-value = 0.418, low R2, low p-value. Since our p-value of 0.418 > our significance level of 0.05. We fail reject our null hypothesis. There is not enough statistical evidence to suggest that at least one group of dietary fiber intake has a different community composition at week 3. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+```{r}
+final3fibord_plot <- plot_grid(wk1fibordplot, wk3fibordplot,
+          nrow = 1, ncol = 2)
+final3fibord_plot
+save_plot(final3fibord_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/final3fib_ordplot.jpg")
+
+```
+
+##### Low vs High 
+Compare Community Composition of Participants with Low vs High Dietary Fiber Intake at week 1: 
+Ho: Community Composition is the same for participants that consume low and high amounts of dietary fiber at week 1 
+
+Ha: At least one group of dietary fiber intake has a different Community Composition at week 1
+```{r}
+wk1fib_proj2 <- physq_proj4 %>%  
+  subset_samples(., study_week =="week1") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk1fib_df2 <- data.frame(sum = sample_sums(wk1fib_proj2))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk1fib_df2, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk1fib_proj2)) #7920
+mean(sample_sums(wk1fib_proj2)) #21030.62
+max(sample_sums(wk1fib_proj2)) #35259
+
+# scale samples to even depth using custom function
+wk1fib_scale2 <- wk1fib_proj2%>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk1fib_bc2 <- ordinate(wk1fib_scale2, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray")  # switch this to distance = "jaccard" for jaccard score 
+wk1fib_bc2
+  #all stresses less than 0.20 
+
+wk1fibordplot2 <- plot_ordination(physeq = wk1fib_proj2, 
+                     ordination = wk1fib_bc2, 
+                     type = "samples", 
+                     color = "dietfiber_status_wk1", 
+                     shape = "diet_status")
+print(wk1fibordplot2)
+save_plot(wk1fibordplot2, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/lowvshighfib_wk1ordplot.jpg")
+
+
+wk1fib_dat_bray2 <- phyloseq::distance(wk1fib_proj2, method = "bray") 
+wk1fib_sampledf2 <- wk1fib_proj2 %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk1fib_adn_res2 <- adonis(formula = wk1fib_dat_bray2 ~ dietfiber_status_wk1, 
+                  data = wk1fib_sampledf2)
+
+# view results
+print(wk1fib_adn_res2) #R2 = 0.01598, p-value = 0.706
+```
+Conclusion: R2 = 0.01598, p-value = 0.706, low R2, low p-value. Since our p-value of 0.706 > our significance level of 0.05. We fail reject our null hypothesis. There is not enough statistical evidence to suggest that at least one group of dietary fiber intake has a different community composition at week 1. Additionally, since our R2 is low, our grouping of samples by diet status is weak.
+
+Compare Community Composition of Participants with Low vs High Dietary Fiber Intake at week 3:
+Ho: Community Composition is the same for participants that consume low and high amounts of dietary fiber at week 3
+
+Ha: At least one group of dietary fiber intake has a different Community Composition at week 3
+```{r}
+wk3fib_proj2 <- physq_proj4 %>%  
+  subset_samples(., study_week =="week3") %>% 
+  prune_taxa(taxa_sums(.) > 1000, .) %>% 
+  prune_samples(sample_sums(.) > 1000, .)
+
+#get read counts 
+sample_sum_wk3fib_df2 <- data.frame(sum = sample_sums(wk3fib_proj2))
+
+#Histogram of sample read counts
+ggplot(sample_sum_wk3fib_df2, aes(x = sum)) + 
+  geom_histogram(color = "black", fill = "gray", binwidth = 2500) +
+  ggtitle("Distribution of sample sequencing depth") + 
+  xlab("Read counts") +
+  theme(axis.title.y = element_blank())
+
+#Summary statistics on read counts 
+min(sample_sums(wk3fib_proj2)) #9290
+mean(sample_sums(wk3fib_proj2)) #20771.23
+max(sample_sums(wk3fib_proj2)) #38765
+
+# scale samples to even depth using custom function
+wk3fib_scale2 <- wk3fib_proj2 %>%
+  scale_reads(round = "round") 
+
+# use ordinate function on subset 
+wk3fib_bc2 <- ordinate(wk3fib_scale2, 
+           method = "NMDS", 
+           k=3, maxit=500, try=50,
+           distance = "bray") 
+wk3fib_bc2
+  #all stresses less than 0.20 
+
+wk3fibordplot2 <- plot_ordination(physeq = wk3fib_proj2, 
+                     ordination = wk3fib_bc2, 
+                     type = "samples", 
+                     color = "dietfiber_status_wk3", 
+                     shape = "diet_status")
+print(wk3fibordplot2)
+save_plot(wk3fibordplot2, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/lowvshighfib_wk3ordplot.jpg")
+
+wk3fib_dat_bray2 <- phyloseq::distance(wk3fib_proj2, method = "bray") 
+wk3fib_sampledf2 <- wk3fib_proj2 %>% 
+  sample_data(.) %>% #extract sample data from phyloseq object 
+  as(., "data.frame") #convert to data frame for adonis()
+
+# run test
+wk3fib_adn_res2 <- adonis(formula = wk3fib_dat_bray2 ~ dietfiber_status_wk3, 
+                  data = wk3fib_sampledf2)
+
+# view results 
+print(wk3fib_adn_res2) #R2 = 0.02177, p-value = 0.268
+
+final2fibord_plot <- plot_grid(wk1fibordplot2, wk3fibordplot2,
+          nrow = 1, ncol = 2)
+final2fibord_plot
+save_plot(final2fibord_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/lowvshighfib_combordplot.jpg")
+```
+Conclusion: R2 = 0.02177, p-value = 0.268, low R2, low p-value. Since our p-value of 0.268 > our significance level of 0.05. We fail reject our null hypothesis. There is not enough statistical evidence to suggest that at least one group of dietary fiber intake has a different community composition at week 3. Additionally, since our R2 is low, our grouping of samples by diet status is weak.  
+
+### Changes in SCFA 
+```{r}
+#data formatting 
+tombrady_df <- samples18_df %>% 
+  select(-starts_with("pH"), -starts_with("bristol"), 
+         -starts_with("blood"), -ends_with("median")) %>% 
+  rename("acetate_mean_wk3" = acetate_mean) %>%
+  rename("butyrate_mean_wk3" = butyrate_mean) %>% 
+  rename("propionate_mean_wk3" = propionate_mean) %>% 
+  rename("fiber_g_wk3" = fiber_g) %>% 
+  select(participant_id, acetate_mean_wk3,butyrate_mean_wk3,propionate_mean_wk3, fiber_g_wk3, dietfiber_status_wk3)
+
+drewbrees_df <- samples16_df %>% 
+  select(-starts_with("pH"), -starts_with("bristol"), 
+         -starts_with("blood"), -ends_with("median"),
+         -sample_id) %>% 
+  rename("acetate_mean_wk1" = acetate_mean) %>%
+  rename("butyrate_mean_wk1" = butyrate_mean) %>% 
+  rename("propionate_mean_wk1" = propionate_mean) %>% 
+  rename("fiber_g_wk1" = fiber_g)
+
+hailmary_df <- merge(drewbrees_df, tombrady_df, by = "participant_id") 
+```
+#### Acetate Production 
+Compare acetate_delta values between those who consume low amounts of dietary fiber and those who consume high amounts of dietary fiber.
+Ho: Those who consume low amounts of dietary fiber's acetate_delta = Those who consume High amounts of dietary fiber's acetate_delta 
+Ha: Those who consume low amounts of dietary fiber's acetate_delta > those who consume high amounts of dietary fiber's acetate_delta 
+```{r}
+acetate_df <- hailmary_df %>% 
+  select(-starts_with("but"),
+         -starts_with("prop"),
+         -starts_with("study")) %>% 
+  drop_na(acetate_mean_wk1) %>% 
+  drop_na(acetate_mean_wk3) %>% 
+  add_column(acetate_delta = "-") %>% 
+  add_column(acetate_status = "-")
+
+acetate_df$acetate_delta <- (acetate_df$acetate_mean_wk1 - acetate_df$acetate_mean_wk3)
+
+acetate_df$acetate_status[acetate_df$acetate_delta < 0] <- "negative"
+acetate_df$acetate_status[acetate_df$acetate_delta > 0] <- "positive"
+```
+```{r}
+## plot
+acetate_plot <- acetate_df %>% 
+  ggplot(aes(x = dietfiber_status_wk1, 
+             y = acetate_delta, 
+             color = dietfiber_status_wk1), 
+         frequency) + 
+  geom_violin() + geom_jitter() + 
+  facet_grid(~frequency) + 
+  xlab(NULL) + 
+  ylab("Acetate (mmol/kg)") + 
+  theme(legend.position = "none")# propionate plot
+
+acetate_plot
+save_plot(acetate_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/acetate_plot.jpg")
+
+## check sample sizes 
+acetate_df %>% 
+  group_by(dietfiber_status_wk1) %>% 
+  summarise(sample_size = n()) #42 high and 52 low so good
+
+## normality check 
+# check normality of each group 
+acet_low <- acetate_df %>%
+  filter(dietfiber_status_wk1 == "low") 
+shapiro.test(acet_low$acetate_delta) #p-value = 0.1273
+ggplot(acet_low, aes(x=acetate_delta)) +
+  geom_histogram() 
+qqnorm(acet_low$acetate_delta); qqline(acet_low$acetate_delta)
+
+acet_high <- acetate_df %>%
+  filter(dietfiber_status_wk1 == "high") 
+shapiro.test(acet_high$acetate_delta) #p-value = 0.08072
+ggplot(acet_high, aes(x=acetate_delta)) +
+  geom_histogram() 
+qqnorm(acet_high$acetate_delta); qqline(acet_high$acetate_delta)
+
+## variances
+var.test(x = acet_low$acetate_delta, 
+         y = acet_high$acetate_delta, 
+         alternative = "two.sided") #p-value = 0.9689 ---> variances equal
+##T-test 
+t.test(x = acet_low$acetate_delta, 
+       y = acet_high$acetate_delta,
+       paired = FALSE, 
+       var.equal = TRUE, #set to true because variances are equal  
+       alternative = "greater") #p-value = 0.5626
+```
+Conclusion: Since our p-value of 0.5626 > 0.05, we fail to reject the null hypothesis. There is not sufficient evidence to suggest that those who consume high amounts of dietary fiber have higher acetate production than those who consume low amounts of dietary fiber. 
+
+#### Butyrate Production
+Compare butyrate_delta values between those who consume low amounts of dietary fiber and those who consume high amounts of dietary fiber.
+Ho: Those with Low dietary fiber intake's butyrate_delta = Those with High dietary fiber intake's butyrate_delta 
+Ha: Those with low dietary fiber intake's butyrate_delta > Those with high dietary fiber intake's butyrate_delta 
+```{r}
+butyrate_df <- hailmary_df %>% 
+  select(-starts_with("acet"),
+         -starts_with("prop"),
+         -starts_with("study")) %>% 
+  drop_na(butyrate_mean_wk1) %>% 
+  drop_na(butyrate_mean_wk3) %>% 
+  add_column(butyrate_delta = "-") %>% 
+  add_column(butyrate_status = "-")
+
+butyrate_df$butyrate_delta <- (butyrate_df$butyrate_mean_wk1 - butyrate_df$butyrate_mean_wk3)
+
+butyrate_df$butyrate_status[butyrate_df$butyrate_delta < 0] <- "negative"
+butyrate_df$butyrate_status[butyrate_df$butyrate_delta > 0] <- "positive"
+```
+```{r}
+
+## plot
+butyrate_plot <- butyrate_df %>% 
+  ggplot(aes(x = dietfiber_status_wk1, 
+             y = butyrate_delta, 
+             color = dietfiber_status_wk1), 
+         frequency) + 
+  geom_violin() + geom_jitter() + 
+  facet_grid(~frequency) + 
+  xlab(NULL) + 
+  ylab("Butyrate (mmol/kg)") + 
+  theme(legend.position = "none")# butyrate plot
+
+butyrate_plot
+save_plot(butyrate_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/butyrate_plot.jpg")
+
+## check sample sizes 
+butyrate_df %>% 
+  group_by(dietfiber_status_wk1) %>% 
+  summarise(sample_size = n()) #42 high and 55 low so good
+
+## normality check 
+# check normality of each group 
+but_low <- butyrate_df %>%
+  filter(dietfiber_status_wk1 == "low") 
+shapiro.test(but_low$butyrate_delta) #p-value = 0.0009996
+ggplot(but_low, aes(x=butyrate_delta)) +
+  geom_histogram() 
+qqnorm(but_low$butyrate_delta); qqline(but_low$butyrate_delta) #skewed left, not so normal 
+
+but_high <- butyrate_df %>%
+  filter(dietfiber_status_wk1 == "high") 
+shapiro.test(but_high$butyrate_delta) #p-value = 0.9017
+ggplot(but_high, aes(x=butyrate_delta)) +
+  geom_histogram() 
+qqnorm(but_high$butyrate_delta); qqline(but_high$butyrate_delta) #approx normal
+
+## variances
+var.test(x = but_low$butyrate_delta, 
+         y = but_high$butyrate_delta, 
+         alternative = "two.sided") #p-value = 0.04451 ---> variances not equal 
+
+## non-parametric T-test because distributions are not both normal 
+wilcox.test(x = but_low$butyrate_delta, 
+       y = but_high$butyrate_delta,
+       paired = FALSE,
+       alternative = "greater") #p-value = 0.1719
+```
+Conclusion: Since our p-value of 0.1719 > 0.05, we fail to reject the null hypothesis. There is not sufficient evidence to suggest that those who consume high amounts of dietary fiber have higher propionate production than those who consume low amounts of dietary fiber. 
+
+#### Propionate Production 
+Compare propionate_delta values between those who consume low amounts of dietary fiber and those who consume high amounts of dietary fiber.
+Ho: Those with Low dietary fiber intake's propionate_delta = Those with High dietary fiber intake's propionate_delta 
+Ha: Those with low dietary fiber intake's bpropionate_delta > Those with high dietary fiber intake's propionate_delta 
+```{r}
+propionate_df <- hailmary_df %>% 
+  select(-starts_with("acet"),
+         -starts_with("but"),
+         -starts_with("study")) %>% 
+  drop_na(propionate_mean_wk1) %>% 
+  drop_na(propionate_mean_wk3) %>% 
+  add_column(propionate_delta = "-") %>% 
+  add_column(propionate_status = "-")
+
+propionate_df$propionate_delta <- (propionate_df$propionate_mean_wk1 - propionate_df$propionate_mean_wk3)
+
+propionate_df$propionate_status[propionate_df$propionate_delta < 0] <- "negative"
+propionate_df$propionate_status[propionate_df$propionate_delta > 0] <- "positive"
+```
+```{r}
+## plot
+propionate_plot <- propionate_df %>% 
+  ggplot(aes(x = dietfiber_status_wk1, 
+             y = propionate_delta, 
+             color = dietfiber_status_wk1), 
+         frequency) + 
+  geom_violin() + geom_jitter() + 
+  facet_grid(~frequency) + 
+  xlab(NULL) + 
+  ylab("Propionate (mmol/kg)") + 
+  theme(legend.position = "none")# propionate plot
+
+propionate_plot
+save_plot(propionate_plot, ncol = 1, nrow = 1, filename = "figures/Dietary Fiber Figures/propionate_plot.jpg")
+
+## check sample sizes 
+propionate_df %>% 
+  group_by(dietfiber_status_wk1) %>% 
+  summarise(sample_size = n()) #42 high and 52 low so good
+
+## normality check 
+# check normality of each group 
+prop_low <- propionate_df %>%
+  filter(dietfiber_status_wk1 == "low") 
+shapiro.test(prop_low$propionate_delta) #p-value = 0.0001857
+ggplot(prop_low, aes(x=propionate_delta)) +
+  geom_histogram() 
+qqnorm(prop_low$propionate_delta); qqline(prop_low$propionate_delta) #skewed left, not so normal 
+
+prop_high <- propionate_df %>%
+  filter(dietfiber_status_wk1 == "high") 
+shapiro.test(prop_high$propionate_delta) #p-value = 0.9068
+ggplot(prop_high, aes(x=propionate_delta)) +
+  geom_histogram() 
+qqnorm(prop_high$propionate_delta); qqline(prop_high$propionate_delta) #approx normal
+
+## variances
+var.test(x = prop_low$propionate_delta, 
+         y = prop_high$propionate_delta, 
+         alternative = "two.sided") #p-value = 0.01278 ---> variances not equal 
+
+## non-parametric T-test 
+wilcox.test(x = prop_low$propionate_delta, 
+       y = prop_high$propionate_delta,
+       paired = FALSE,
+       alternative = "greater") #p-value = 0.2505
+```
+Conclusion: Since our p-value of 0.2505 > 0.05, we fail to reject the null hypothesis. There is not sufficient evidence to suggest that those who consume high amounts of dietary fiber have higher propionate production than those who consume low amounts of dietary fiber. 
+-----
+end

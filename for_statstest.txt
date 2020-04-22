@@ -1,0 +1,131 @@
+participant_id	study_week	semester	supplement_consumed	quantity_compliant	frequency	ph_median	ph_mean	bristol_median	bristol_mean	blood_glucose_median	blood_glucose_mean	acetate_median	acetate_mean	butyrate_median	butyrate_mean	propionate_median	propionate_mean	sample_id	diet_status	fiber_g
+U001	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	18.83	18.42	4.78	11.38	4.13	4.02	U001_week1	Vegetarian	17
+U005	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	18.14	18.14	2.81	2.81	3.63	3.63	U005_week1	Vegetarian	25
+U007	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	28.6	31.54	8.13	8.34	4.69	4.39	U007_week1	Vegetarian	32
+U008	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	11.64	11.64	3.05	3.05	2.78	2.78	U008_week1	Vegetarian	15
+U011	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	29.13	28.64	14.36	16.43	5.28	6.31	U011_week1	Vegetarian	13
+U014	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	24.65	26.78	10.41	11.71	3.32	3.15	U014_week1	Vegetarian	26
+U020	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	25.42	24.32	6.84	6.69	4.85	4.5	U020_week1	Vegetarian	13
+U026	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	17.39	18.79	7.76	8.32	3.7	4.09	U026_week1	Vegetarian	13
+U029	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	25.57	26.79	9.52	8.64	5.22	6.4	U029_week1	Vegetarian	12
+U031	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	31.66	33.93	12.36	11.74	11.3	11.02	U031_week1	Vegetarian	18
+U035	week1	Winter2015	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	21.93	21.24	3.64	3.76	4.07	3.97	U035_week1	Vegetarian	14
+U127	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	65.1	69.25	19.29	16.96	10.32	16.48	U127_week1	Vegetarian	19
+U128	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	103.31	106.08	14.71	14.3	13.58	12.87	U128_week1	Omnivorous	27
+U129	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	39.99	40.31	15.99	12.21	NA	NA	U129_week1	Omnivorous	16
+U131	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	76.65	81.75	14.5	13.88	16.45	13.36	U131_week1	Omnivorous	11
+U132	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	87.41	84.79	13.51	15.14	15.01	15.67	U132_week1	Vegetarian	18
+U149	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	47.35	38.68	3.98	6	2.24	5.1	U149_week1	Omnivorous	44
+U150	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	123.16	110.74	11.33	11.56	8.21	7.68	U150_week1	Omnivorous	25
+U152	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	53.5	56.97	13.43	13.11	8.4	10.22	U152_week1	Omnivorous	15
+U161	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	134.77	120.85	9.69	9.09	10.54	9.3	U161_week1	Omnivorous	7
+U165	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	53.28	51.11	14.67	14.96	12.25	14.2	U165_week1	Vegetarian	17
+U185	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	NA	NA	23.66	23.66	NA	NA	U185_week1	Omnivorous	13
+U186	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	59.91	50.51	14.04	15.7	11.49	11.49	U186_week1	Omnivorous	11
+U188	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	88.63	94.06	14.43	14.81	17.83	19.28	U188_week1	Omnivorous	28
+U202	week1	Winter2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	58.77	65.8	5.22	8.5	12.19	13.06	U202_week1	Omnivorous	26
+U214	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	26.42	26.42	7.58	7.58	11.73	11.73	U214_week1	Omnivorous	33
+U223	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	36.05	35.03	10.65	12.39	6.04	5.36	U223_week1	Omnivorous	28
+U224	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	35.26	35.26	7.81	7.81	7.12	7.12	U224_week1	Omnivorous	9
+U227	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	42.7	42.7	19.56	19.56	6.11	6.11	U227_week1	Omnivorous	29
+U247	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	43.71	45.43	15.93	18.05	18.06	16.32	U247_week1	Omnivorous	17
+U248	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	42.54	34.75	14.46	16.83	9.3	16.53	U248_week1	Omnivorous	26
+U249	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	28.78	31.95	17.35	20.32	7.52	15.46	U249_week1	Omnivorous	59
+U250	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	52.96	47.63	12.2	10.36	12.78	11.22	U250_week1	Omnivorous	13
+U261	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	17.18	30.2	10.47	10.8	3.08	4.54	U261_week1	Omnivorous	32
+U262	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	29.26	26.46	10.74	10.43	6.24	6.24	U262_week1	Omnivorous	26
+U268	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	67.98	50.77	15.44	21	14.64	14.47	U268_week1	Omnivorous	18
+U269	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	43.38	40.16	17.85	17.96	6.72	6.98	U269_week1	Omnivorous	27
+U273	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	95.28	79.3	35.05	27.57	18.36	15.52	U273_week1	Omnivorous	20
+U276	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	43.8	41.98	15.73	13.83	13.31	11.47	U276_week1	Omnivorous	20
+U282	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	82.68	80.39	43.04	31.5	21.02	20.28	U282_week1	Omnivorous	12
+U286	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	22.42	22.83	7.63	8.5	10.87	9.66	U286_week1	Omnivorous	30
+U291	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	21.16	22.05	13.03	13.42	4.54	4.72	U291_week1	Omnivorous	8
+U296	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	26.89	26.89	8.86	18.88	3.36	4.44	U296_week1	Omnivorous	15
+U300	week1	Fall2016	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	25.71	25.13	9.74	8.19	4.61	6.15	U300_week1	Omnivorous	17
+U445	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	96	96	NA	NA	NA	NA	NA	NA	U445_week1	Omnivorous	26
+U446	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	93	92	NA	NA	NA	NA	NA	NA	U446_week1	Vegetarian	19
+U448	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	87	84	NA	NA	NA	NA	NA	NA	U448_week1	Omnivorous	15
+U449	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	90	91	NA	NA	NA	NA	NA	NA	U449_week1	Omnivorous	17
+U450	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	82	82	NA	NA	NA	NA	NA	NA	U450_week1	Omnivorous	29
+U452	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	90	91	NA	NA	NA	NA	NA	NA	U452_week1	Omnivorous	18
+U453	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	95	94	NA	NA	NA	NA	NA	NA	U453_week1	Flexitarian (primarily vegetarian, but occasionally eat meat)	40
+U455	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	96	96	NA	NA	NA	NA	NA	NA	U455_week1	Vegan	17
+U458	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	92	95	NA	NA	NA	NA	NA	NA	U458_week1	Omnivorous	26
+U460	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	89	88	NA	NA	NA	NA	NA	NA	U460_week1	Omnivorous	22
+U461	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	96	96	NA	NA	NA	NA	NA	NA	U461_week1	Omnivorous	23
+U462	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	94	94	NA	NA	NA	NA	NA	NA	U462_week1	Omnivorous	10
+U464	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	87	87	NA	NA	NA	NA	NA	NA	U464_week1	Omnivorous	16
+U465	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	64	63	NA	NA	NA	NA	NA	NA	U465_week1	Omnivorous	8
+U467	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	91	91	NA	NA	NA	NA	NA	NA	U467_week1	Omnivorous	9
+U468	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	85	90	NA	NA	NA	NA	NA	NA	U468_week1	Flexitarian (primarily vegetarian, but occasionally eat meat)	26
+U469	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	95	96	NA	NA	NA	NA	NA	NA	U469_week1	Omnivorous	23
+U470	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	90	93	NA	NA	NA	NA	NA	NA	U470_week1	Omnivorous	43
+U472	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	88	86	NA	NA	NA	NA	NA	NA	U472_week1	Omnivorous	8
+U474	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	94	94	NA	NA	NA	NA	NA	NA	U474_week1	Omnivorous	26
+U475	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	93	90	NA	NA	NA	NA	NA	NA	U475_week1	Omnivorous	15
+U478	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	87	88	NA	NA	NA	NA	NA	NA	U478_week1	Flexitarian (primarily vegetarian, but occasionally eat meat)	27
+U480	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	105	106	NA	NA	NA	NA	NA	NA	U480_week1	Omnivorous	25
+U481	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	78	81	NA	NA	NA	NA	NA	NA	U481_week1	Omnivorous	19
+U483	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	98	98	NA	NA	NA	NA	NA	NA	U483_week1	Flexitarian (primarily vegetarian, but occasionally eat meat)	18
+U484	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	87	87	NA	NA	NA	NA	NA	NA	U484_week1	Omnivorous	10
+U486	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	92	92	NA	NA	NA	NA	NA	NA	U486_week1	Omnivorous	16
+U487	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	95	94	NA	NA	NA	NA	NA	NA	U487_week1	Omnivorous	22
+U488	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	84	84	NA	NA	NA	NA	NA	NA	U488_week1	Vegetarian	26
+U489	week1	Fall2017	BRMPS	yes	2xdaily	NA	NA	NA	NA	100	98	NA	NA	NA	NA	NA	NA	U489_week1	Omnivorous	14
+U500	week1	Winter2018	BRMPS	yes	2xdaily	6.6	6.6	NA	NA	NA	NA	35.49	35.49	10.62	10.62	6.6	6.6	U500_week1	Vegetarian	17
+U501	week1	Winter2018	BRMPS	yes	2xdaily	6.6	6.6	NA	NA	NA	NA	52.06	47.15	10.4	10.25	13.69	13.07	U501_week1	Omnivorous	16
+U502	week1	Winter2018	BRMPS	yes	2xdaily	6.4	6.4	NA	NA	NA	NA	46.78	47.82	10.06	13.18	4.51	6.08	U502_week1	Omnivorous	14
+U507	week1	Winter2018	BRMPS	yes	2xdaily	6.7	6.7	NA	NA	NA	NA	74.94	74.94	18.06	18.06	12.62	12.62	U507_week1	Omnivorous	17
+U509	week1	Winter2018	BRMPS	yes	2xdaily	6.8	6.8	NA	NA	NA	NA	17.65	25.73	4.13	3.83	5.28	5.28	U509_week1	Omnivorous	7
+U510	week1	Winter2018	BRMPS	yes	2xdaily	6.8	6.8	NA	NA	NA	NA	55.67	61.13	11.02	9.72	9.66	9.43	U510_week1	Omnivorous	11
+U511	week1	Winter2018	BRMPS	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	35.62	35.62	11.47	11.47	9.92	9.92	U511_week1	Omnivorous	17
+U516	week1	Winter2018	BRMPS	yes	2xdaily	6.4	6.4	NA	NA	NA	NA	31.87	43.15	17.75	19.48	10.69	13.23	U516_week1	Omnivorous	12
+U517	week1	Winter2018	BRMPS	yes	2xdaily	6.9	6.9	NA	NA	NA	NA	36.67	34.02	9.42	7.93	11.08	13.54	U517_week1	Omnivorous	21
+U518	week1	Winter2018	BRMPS	yes	2xdaily	6	6	NA	NA	NA	NA	52.95	49.71	17.41	22.76	4.74	5.22	U518_week1	Omnivorous	15
+U519	week1	Winter2018	BRMPS	yes	2xdaily	6.8	6.8	NA	NA	NA	NA	32.39	36.96	9.51	9.26	4.59	5.62	U519_week1	Vegetarian	34
+U520	week1	Winter2018	BRMPS	yes	2xdaily	6.6	6.6	NA	NA	NA	NA	28.85	31.33	8.01	8.01	11.9	11.9	U520_week1	Omnivorous	16
+U521	week1	Winter2018	BRMPS	yes	2xdaily	6	6	NA	NA	NA	NA	54.36	44.01	5.39	5.41	8.77	8.55	U521_week1	Omnivorous	17
+U523	week1	Winter2018	BRMPS	yes	2xdaily	6	6	NA	NA	NA	NA	63.3	62.29	17.61	17.61	17.47	17.47	U523_week1	Omnivorous	10
+U524	week1	Winter2018	BRMPS	yes	2xdaily	6	6	NA	NA	NA	NA	60.05	76.86	17.41	20.2	12.42	10.11	U524_week1	Omnivorous	18
+U525	week1	Winter2018	BRMPS	yes	2xdaily	6.6	6.6	NA	NA	NA	NA	23.92	23.92	2.63	2.63	2.91	2.91	U525_week1	Omnivorous	33
+U526	week1	Winter2018	BRMPS	yes	2xdaily	6.6	6.6	NA	NA	NA	NA	41.75	46.85	17.95	17.88	8.19	9.38	U526_week1	Omnivorous	19
+U529	week1	Winter2018	BRMPS	yes	2xdaily	6.8	6.8	NA	NA	NA	NA	30.82	30.82	7	7	7.59	7.59	U529_week1	Omnivorous	20
+U530	week1	Winter2018	BRMPS	yes	2xdaily	5.8	5.8	NA	NA	NA	NA	47.38	47.38	22.13	22.13	10.7	10.7	U530_week1	Omnivorous	17
+U532	week1	Winter2018	BRMPS	yes	2xdaily	7.2	7.2	NA	NA	NA	NA	62.34	62	10.99	10.4	10.66	10.66	U532_week1	Omnivorous	12
+U535	week1	Winter2018	BRMPS	yes	2xdaily	6.2	6.2	NA	NA	NA	NA	83.13	80.5	18.47	21.23	8.5	10.27	U535_week1	Omnivorous	32
+U536	week1	Winter2018	BRMPS	yes	2xdaily	NA	NA	NA	NA	NA	NA	51.73	51.73	11.25	11.25	11.79	11.79	U536_week1	Omnivorous	16
+U541	week1	Winter2018	BRMPS	yes	2xdaily	7	7	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	U541_week1	Omnivorous	12
+U542	week1	Winter2018	BRMPS	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	42.06	43.24	12.93	15.39	8.43	13.42	U542_week1	Pescatarian	22
+U543	week1	Winter2018	BRMPS	yes	2xdaily	6.7	6.7	NA	NA	NA	NA	40.33	40.03	8.92	9.19	8.02	7.03	U543_week1	Omnivorous	11
+U545	week1	Winter2018	BRMPS	yes	2xdaily	6.4	6.4	NA	NA	NA	NA	45.16	60.04	18.13	25.7	5.93	5.29	U545_week1	Omnivorous	19
+U546	week1	Winter2018	BRMPS	yes	2xdaily	6.2	6.2	NA	NA	NA	NA	32.09	32.79	11.62	10.36	6.93	7.27	U546_week1	Omnivorous	30
+U574	week1	Winter2018	BRMPS	yes	2xdaily	6.65	6.65	NA	NA	NA	NA	44.9	44.9	13.41	13.41	6.38	6.38	U574_week1	Vegetarian	12
+U581	week1	Winter2018	BRMPS	yes	2xdaily	6.4	6.4	NA	NA	NA	NA	18.8	18.98	8.87	7.98	4.76	3.55	U581_week1	Vegetarian	25
+U802	week1	Fall2019	LOODAT	yes	2xdaily	7	7	NA	NA	NA	NA	25.12	24.87	7.05	8.38	15.64	17.01	U802_week1	Omnivorous	15
+U804	week1	Fall2019	LOODAT	yes	2xdaily	7	7	NA	NA	NA	NA	41.99	44.88	6.39	7.76	21.79	18.33	U804_week1	Pollo-pescatarian (only poultry and fish)	23
+U805	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.67	NA	NA	NA	NA	37.82	31.55	9.5	12.08	13.62	12.83	U805_week1	Pollo-pescatarian (only poultry and fish)	15
+U810	week1	Fall2019	LOODAT	yes	2xdaily	7	7	NA	NA	NA	NA	17.65	18.35	4.7	4.69	6.45	10.09	U810_week1	Omnivorous	9
+U811	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	32.02	28.36	13.2	12.84	13	13.34	U811_week1	Pollo-pescatarian (only poultry and fish)	16
+U812	week1	Fall2019	LOODAT	yes	2xdaily	6.5	7	NA	NA	NA	NA	23.5	25.34	9.91	9.15	7.37	8.32	U812_week1	Omnivorous	19
+U815	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	48.36	47.37	18.85	17.39	17.86	19.54	U815_week1	Omnivorous	26
+U816	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.33	NA	NA	NA	NA	37.72	36.88	9.54	9.88	16.02	18.64	U816_week1	Omnivorous	18
+U817	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	37.35	40.36	19.36	16.25	16.75	15.24	U817_week1	Omnivorous	7
+U818	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.33	NA	NA	NA	NA	31.88	40.68	5.22	7.12	5.02	6.7	U818_week1	Omnivorous	13
+U822	week1	Fall2019	LOODAT	yes	2xdaily	7.5	7.67	NA	NA	NA	NA	21.64	23.46	8.37	7.55	10.04	12.75	U822_week1	Omnivorous	25
+U823	week1	Fall2019	LOODAT	yes	2xdaily	NA	NA	NA	NA	NA	NA	23.13	23.13	11.05	11.05	9.56	9.56	U823_week1	Pollo-pescatarian (only poultry and fish)	19
+U824	week1	Fall2019	LOODAT	yes	2xdaily	6	6.5	NA	NA	NA	NA	31.34	32.79	11.33	12.07	2.23	5.48	U824_week1	Pollo-pescatarian (only poultry and fish)	49
+U826	week1	Fall2019	LOODAT	yes	2xdaily	7.5	7.33	NA	NA	NA	NA	19.4	19.78	4.43	4.77	15.13	14.78	U826_week1	Omnivorous	18
+U831	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.33	NA	NA	NA	NA	21.12	21.41	16.25	15.24	5.4	14.03	U831_week1	Vegan	24
+U832	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	28.2	35.45	11.09	12.91	4.79	5.25	U832_week1	Omnivorous	27
+U835	week1	Fall2019	LOODAT	yes	2xdaily	8	8	NA	NA	NA	NA	16.72	18.64	12.42	11.59	10.34	10.41	U835_week1	Omnivorous	32
+U837	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.67	NA	NA	NA	NA	32.24	32.01	10.07	14.08	13.54	13	U837_week1	Omnivorous	10
+U839	week1	Fall2019	LOODAT	yes	2xdaily	NA	NA	NA	NA	NA	NA	41.18	41.18	17.48	17.48	NA	NA	U839_week1	Omnivorous	18
+U840	week1	Fall2019	LOODAT	yes	2xdaily	8	7.5	NA	NA	NA	NA	28.45	29.07	14.55	13.25	7.27	7.13	U840_week1	Omnivorous	28
+U841	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	22.2	28.61	12.2	13.43	2.38	3.79	U841_week1	Omnivorous	56
+U842	week1	Fall2019	LOODAT	yes	2xdaily	7.75	7.75	NA	NA	NA	NA	29.72	30.82	8.8	8.63	17.18	19.78	U842_week1	Pescatarian	19
+U845	week1	Fall2019	LOODAT	yes	2xdaily	8	8	NA	NA	NA	NA	27.14	28.36	6.57	7.3	10.82	17.65	U845_week1	Pollo-pescatarian (only poultry and fish)	37
+U847	week1	Fall2019	LOODAT	yes	2xdaily	6.75	6.62	NA	NA	NA	NA	33.57	34.22	9.59	7.48	7.07	11.35	U847_week1	Pollo-pescatarian (only poultry and fish)	18
+U849	week1	Fall2019	LOODAT	yes	2xdaily	5.75	5.75	NA	NA	NA	NA	26.64	39.46	17.36	19.89	13.74	12.69	U849_week1	Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)	5
+U851	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.33	NA	NA	NA	NA	32.73	30.92	12.32	12.08	8.6	9.1	U851_week1	Lacto-ovo-vegetarians (plant-based foods, dairy and/or eggs)	28
+U854	week1	Fall2019	LOODAT	yes	2xdaily	6.5	6.5	NA	NA	NA	NA	27.21	26.1	15.07	14.04	14.06	13.89	U854_week1	Omnivorous	18
